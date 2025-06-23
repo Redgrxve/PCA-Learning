@@ -1,5 +1,4 @@
 #include "customchartview.h"
-#include "customchart.h"
 
 #include <QtCharts/QChartView>
 #include <QtCharts/QScatterSeries>
@@ -9,12 +8,7 @@
 CustomChartView::CustomChartView(QWidget *parent)
     : QChartView(parent)
 {
-    m_chart = new CustomChart;
-    m_chart->setAxisRange(0, 10, 0, 10);
-    setChart(m_chart);
-
     setRenderHint(QPainter::Antialiasing);
-
     setDragMode(QGraphicsView::NoDrag);
     setMouseTracking(true);
 }

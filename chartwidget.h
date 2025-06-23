@@ -2,7 +2,8 @@
 #define CHARTWIDGET_H
 
 #include <QWidget>
-#include <Eigen/Dense>
+
+class PCADataModel;
 
 namespace Ui {
 class ChartWidget;
@@ -16,14 +17,16 @@ public:
     explicit ChartWidget(QWidget *parent = nullptr);
     ~ChartWidget();
 
-    inline void setData(const Eigen::MatrixXd &data) { m_data = data; }
+    void setModel(PCADataModel *model);
 
-    void createInitialChart();
-    void createMeanChart(const Eigen::MatrixXd &data);
+    void showInitialData(bool show = true);
+    void showMeanData(bool show = true);
+    void showReducedData(bool show = true);
+
 
 private:
     Ui::ChartWidget *ui;
-    Eigen::MatrixXd m_data;
+    PCADataModel *m_model;
 
     void setSliderValue(int value);
 

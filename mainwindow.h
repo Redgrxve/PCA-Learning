@@ -10,6 +10,8 @@ class MainWindow;
 }
 QT_END_NAMESPACE
 
+class PCADataModel;
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -22,5 +24,6 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    PCADataModel *m_dataModel;
 };
 #endif // MAINWINDOW_H

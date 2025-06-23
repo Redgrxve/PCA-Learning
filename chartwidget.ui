@@ -19,11 +19,55 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QPushButton" name="pushButton">
-         <property name="text">
-          <string>Центрировать</string>
-         </property>
-        </widget>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <widget class="QCheckBox" name="initialDataCheckBox">
+           <property name="minimumSize">
+            <size>
+             <width>121</width>
+             <height>21</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Исходные данные</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="meanDataCheckBox">
+           <property name="minimumSize">
+            <size>
+             <width>76</width>
+             <height>21</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Центрированные данные</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QCheckBox" name="checkBox_4">
+           <property name="text">
+            <string>CheckBox</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_3">
+           <property name="text">
+            <string>CheckBox</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
         <spacer name="horizontalSpacer">
@@ -99,15 +143,15 @@
     </layout>
    </item>
    <item row="1" column="0">
-    <widget class="CustomChartView" name="chartView"/>
+    <widget class="PCAChartView" name="chartView"/>
    </item>
   </layout>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>CustomChartView</class>
+   <class>PCAChartView</class>
    <extends>QGraphicsView</extends>
-   <header>customchartview.h</header>
+   <header>pcachartview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

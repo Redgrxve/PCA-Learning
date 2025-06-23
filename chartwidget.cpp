@@ -1,5 +1,6 @@
 #include "chartwidget.h"
-#include "pca.h"
+#include "pcachart.h"
+#include "pcadatamodel.h"
 #include "ui_chartwidget.h"
 
 #include <QtCharts/QScatterSeries>
@@ -23,9 +24,10 @@ ChartWidget::ChartWidget(QWidget *parent)
 
     connect(ui->zoomSlider, &QSlider::sliderMoved, this, &ChartWidget::onSliderMoved);
 
-    connect(ui->pushButton, &QPushButton::clicked, this, [this](){
-        createMeanChart(m_data);
-    });
+    connect(ui->initialDataCheckBox, &QCheckBox::clicked,
+            this, [this](bool checked){ showInitialData(checked); });
+    connect(ui->meanDataCheckBox, &QCheckBox::clicked,
+            this, [this](bool checked){ showMeanData(checked); });
 }
 
 ChartWidget::~ChartWidget()
@@ -33,31 +35,50 @@ ChartWidget::~ChartWidget()
     delete ui;
 }
 
-void ChartWidget::createInitialChart()
+void ChartWidget::setModel(PCADataModel *model)
 {
-    QScatterSeries* series = new QScatterSeries();
-    series->setMarkerSize(10.0);
+    m_model = model;
 
-    for (int i = 0; i < m_data.rows(); ++i) {
-        series->append(m_data(i, 0), m_data(i, 1));
+    PCAChart *pcaChart = ui->chartView->pcaChart();
+    if (!pcaChart) {
+        qDebug() << "void ChartWidget::setModel(PCADataModel *model): pcaChart is nullptr";
+        return;
     }
 
-    ui->chartView->customChart()->setMainSeries(series);
+    QScatterSeries *dataSeries = new QScatterSeries(pcaChart);
+    QScatterSeries *meanDataSeries = new QScatterSeries(pcaChart);
+
+    dataSeries->setMarkerSize(10.0);
+    meanDataSeries->setMarkerSize(10.0);
+
+    const auto &data = model->data();
+    for (int i = 0; i < data.rows(); ++i) {
+        dataSeries->append(data(i, 0), data(i, 1));
+    }
+
+    const auto &meanData = m_model->meanData();
+    for (int i = 0; i < meanData.rows(); ++i) {
+        meanDataSeries->append(meanData(i, 0), meanData(i, 1));
+    }
+
+    pcaChart->setDataSeries(dataSeries);
+
+    pcaChart->setMeanDataSeries(meanDataSeries);
+    pcaChart->showMeanDataSeries(false);
 }
 
-void ChartWidget::createMeanChart(const Eigen::MatrixXd &data)
+void ChartWidget::showInitialData(bool show)
 {
-    ui->chartView->customChart()->removeMainSeries();
+    if (!m_model) return;
 
-    QScatterSeries* series = new QScatterSeries();
-    series->setMarkerSize(10.0);
+    ui->chartView->pcaChart()->showDataSeries(show);
+}
 
-    const auto mean = PCA::meanSubtraction(m_data);
-    for (int i = 0; i < m_data.rows(); ++i) {
-        series->append(mean(i, 0), mean(i, 1));
-    }
+void ChartWidget::showMeanData(bool show)
+{
+    if (!m_model) return;
 
-    ui->chartView->customChart()->setMainSeries(series);
+    ui->chartView->pcaChart()->showMeanDataSeries(show);
 }
 
 void ChartWidget::setSliderValue(int value)

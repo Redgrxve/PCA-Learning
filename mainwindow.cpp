@@ -1,5 +1,5 @@
 #include "mainwindow.h"
-#include "pca.h"
+#include "pcadatamodel.h"
 #include "./ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -8,12 +8,15 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    ui->chartWidget->setData(generateData());
-    ui->chartWidget->createInitialChart();
+    m_dataModel = new PCADataModel(generateData());
+
+    ui->chartWidget->setModel(m_dataModel);
+   // ui->chartWidget->showInitialData();
 }
 
 MainWindow::~MainWindow()
 {
+    delete m_dataModel;
     delete ui;
 }
 

@@ -3,16 +3,12 @@
 
 #include <QChartView>
 
-#include "customchart.h"
-
 class CustomChartView : public QChartView
 {
     Q_OBJECT
 
 public:
     explicit CustomChartView(QWidget *parent = nullptr);
-
-    inline CustomChart *customChart() const { return m_chart; }
 
     inline float zoomFactor()  const { return m_zoomFactor; }
     inline float currentZoom() const { return m_currentZoom; }
@@ -28,8 +24,6 @@ protected:
     void wheelEvent(QWheelEvent *event)        override;
 
 private:
-    CustomChart *m_chart;
-
     float m_zoomFactor  = 1.2f;
     float m_currentZoom = 1.0f;
 
