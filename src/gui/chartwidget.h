@@ -21,9 +21,8 @@ public:
     void setupSeries();
 
     void showInitialData(bool show = true);
-    void showMeanData(bool show = true);
+    void showCenteredData(bool show = true);
     void showReducedData(bool show = true);
-
 
 private:
     Ui::ChartWidget *ui;

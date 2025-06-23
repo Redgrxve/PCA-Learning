@@ -27,8 +27,10 @@ ChartWidget::ChartWidget(QWidget *parent)
 
     connect(ui->initialDataCheckBox, &QCheckBox::clicked,
             this, [this](bool checked){ showInitialData(checked); });
-    connect(ui->meanDataCheckBox, &QCheckBox::clicked,
-            this, [this](bool checked){ showMeanData(checked); });
+    connect(ui->centeredDataCheckBox, &QCheckBox::clicked,
+            this, [this](bool checked){ showCenteredData(checked); });
+    connect(ui->reducedDataCheckBox, &QCheckBox::clicked,
+            this, [this](bool checked){ showReducedData(checked); });
 }
 
 ChartWidget::~ChartWidget()
@@ -58,11 +60,11 @@ void ChartWidget::setupSeries()
     }
 
     auto dataSeries = new QScatterSeries(pcaChart);
-    auto meanDataSeries = new QScatterSeries(pcaChart);
+    auto centeredDataSeries = new QScatterSeries(pcaChart);
     auto reducedDataSeries = new QScatterSeries(pcaChart);
 
     dataSeries->setMarkerSize(10.0);
-    meanDataSeries->setMarkerSize(10.0);
+    centeredDataSeries->setMarkerSize(10.0);
     reducedDataSeries->setMarkerSize(10.0);
 
     const auto &data = m_model->data();
@@ -70,9 +72,9 @@ void ChartWidget::setupSeries()
         dataSeries->append(data(i, 0), data(i, 1));
     }
 
-    const auto &meanData = m_model->meanData();
-    for (int i = 0; i < meanData.rows(); ++i) {
-        meanDataSeries->append(meanData(i, 0), meanData(i, 1));
+    const auto &centeredData = m_model->centeredData();
+    for (int i = 0; i < centeredData.rows(); ++i) {
+        centeredDataSeries->append(centeredData(i, 0), centeredData(i, 1));
     }
 
     const auto &reducedData = m_model->reducedData();
@@ -81,10 +83,10 @@ void ChartWidget::setupSeries()
     }
 
     pcaChart->setDataSeries(dataSeries);
-    pcaChart->setMeanDataSeries(meanDataSeries);
+    pcaChart->setCenteredDataSeries(centeredDataSeries);
     pcaChart->setReducedDataSeries(reducedDataSeries);
 
-    pcaChart->showMeanDataSeries(false);
+    pcaChart->showCenteredDataSeries(false);
 }
 
 void ChartWidget::showInitialData(bool show)
@@ -94,11 +96,11 @@ void ChartWidget::showInitialData(bool show)
     ui->chartView->pcaChart()->showDataSeries(show);
 }
 
-void ChartWidget::showMeanData(bool show)
+void ChartWidget::showCenteredData(bool show)
 {
     if (!m_model) return;
 
-    ui->chartView->pcaChart()->showMeanDataSeries(show);
+    ui->chartView->pcaChart()->showCenteredDataSeries(show);
 }
 
 void ChartWidget::showReducedData(bool show)

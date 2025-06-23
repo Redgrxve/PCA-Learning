@@ -11,7 +11,7 @@ public:
     inline void setData(const Eigen::MatrixXd &data) { m_data = data; }
 
     inline const Eigen::MatrixXd &data()        const { return m_data; }
-    inline const Eigen::MatrixXd &meanData()    const { return m_centeredData; }
+    inline const Eigen::MatrixXd &centeredData()    const { return m_centeredData; }
     inline const Eigen::MatrixXd &reducedData() const { return m_reducedData; }
 
     inline const Eigen::MatrixXd &covMatrix()   const { return m_covMatrix; }

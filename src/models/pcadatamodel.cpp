@@ -1,0 +1,20 @@
+#include "pcadatamodel.h"
+#include "pca.h"
+
+PCADataModel::PCADataModel(const Eigen::MatrixXd &data)
+    : m_data(data)
+{
+    m_centeredData = PCA::meanSubtraction(data);
+    m_covMatrix = PCA::findCovarianceMatrix(m_centeredData);
+    m_reducedData = PCA::performPCA(data);
+}
+
+void PCADataModel::calculateCovMatrix()
+{
+    m_covMatrix = PCA::findCovarianceMatrix(m_centeredData);
+}
+
+void PCADataModel::calculateReducedData()
+{
+    //m_reducedData = PCA::eigenValues(m_centeredData, m_covMatrix);
+}

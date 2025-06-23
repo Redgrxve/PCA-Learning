@@ -36,7 +36,7 @@ void PCAChart::setDataSeries(QScatterSeries *series)
     addAndAttachSeries(series);
 }
 
-void PCAChart::setMeanDataSeries(QScatterSeries *series)
+void PCAChart::setCenteredDataSeries(QScatterSeries *series)
 {
     m_meanDataSeries = series;
     addAndAttachSeries(series);
@@ -99,7 +99,7 @@ void PCAChart::showDataSeries(bool show)
         m_dataSeries->hide();
 }
 
-void PCAChart::showMeanDataSeries(bool show)
+void PCAChart::showCenteredDataSeries(bool show)
 {
     if (!m_meanDataSeries) return;
 
