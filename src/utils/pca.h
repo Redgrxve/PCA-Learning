@@ -44,14 +44,13 @@ Eigen::MatrixXd findEigenVectors(const Eigen::MatrixXd &cov, int components) {
     return eig.eigenvectors().rightCols(components);
 }
 
-Eigen::MatrixXd reduceData(const Eigen::MatrixXd &data, const Eigen::MatrixXd &eigVectors)
+Eigen::MatrixXd reduceData(const Eigen::MatrixXd &data, const Eigen::MatrixXd &eigVectors, int componentsCount)
 {
-    int k = 2;
-    Eigen::MatrixXd targetVectors = eigVectors.rightCols(k);
+    Eigen::MatrixXd targetVectors = eigVectors.rightCols(componentsCount);
     return data * targetVectors;
 }
 
-Eigen::MatrixXd performPCA(const Eigen::MatrixXd &data)
+Eigen::MatrixXd performPCA(const Eigen::MatrixXd &data, int componentsCount)
 {
     const auto centered = meanSubtraction(data);
     std::cout << "\nCentered\n" << centered << std::endl;
@@ -59,7 +58,7 @@ Eigen::MatrixXd performPCA(const Eigen::MatrixXd &data)
     std::cout << "\nCov\n" << covMatrix << std::endl;
     const auto eigVectors = findEigenVectors(covMatrix, 0);
     std::cout << "\nEigen vectors\n" << eigVectors << std::endl;
-    const auto reducedData = reduceData(centered, eigVectors);
+    const auto reducedData = reduceData(centered, eigVectors, componentsCount);
     std::cout << "\nProjection\n" << reducedData << std::endl;
     return reducedData;
 }

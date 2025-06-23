@@ -30,15 +30,15 @@ PCAChart::PCAChart(QGraphicsItem *parent)
     legend()->hide();
 }
 
-void PCAChart::setDataSeries(QScatterSeries *series)
+void PCAChart::setInitialDataSeries(QScatterSeries *series)
 {
-    m_dataSeries = series;
+    m_initialDataSeries = series;
     addAndAttachSeries(series);
 }
 
 void PCAChart::setCenteredDataSeries(QScatterSeries *series)
 {
-    m_meanDataSeries = series;
+    m_centeredDataSeries = series;
     addAndAttachSeries(series);
 }
 
@@ -50,7 +50,7 @@ void PCAChart::setReducedDataSeries(QScatterSeries *series)
 
 void PCAChart::removeDataSeries()
 {
-    removeSeries(m_dataSeries);
+    removeSeries(m_initialDataSeries);
 }
 
 void PCAChart::addAndAttachSeries(QAbstractSeries *series)
@@ -91,22 +91,22 @@ void PCAChart::setAxesLinesColor(const QColor &color)
 
 void PCAChart::showDataSeries(bool show)
 {
-    if (!m_dataSeries) return;
+    if (!m_initialDataSeries) return;
 
     if (show)
-        m_dataSeries->show();
+        m_initialDataSeries->show();
     else
-        m_dataSeries->hide();
+        m_initialDataSeries->hide();
 }
 
 void PCAChart::showCenteredDataSeries(bool show)
 {
-    if (!m_meanDataSeries) return;
+    if (!m_centeredDataSeries) return;
 
     if (show)
-        m_meanDataSeries->show();
+        m_centeredDataSeries->show();
     else
-        m_meanDataSeries->hide();
+        m_centeredDataSeries->hide();
 }
 
 void PCAChart::showReducedDataSeries(bool show)
@@ -117,5 +117,35 @@ void PCAChart::showReducedDataSeries(bool show)
         m_reducedDataSeries->show();
     else
         m_reducedDataSeries->hide();
+}
+
+void PCAChart::clearAllDataSeries()
+{
+    if (m_initialDataSeries) {
+        removeSeries(m_initialDataSeries);
+        delete m_initialDataSeries;
+        m_initialDataSeries = nullptr;
+    }
+
+    if (m_centeredDataSeries) {
+        removeSeries(m_centeredDataSeries);
+        delete m_centeredDataSeries;
+        m_centeredDataSeries = nullptr;
+    }
+
+    if (m_reducedDataSeries) {
+        removeSeries(m_reducedDataSeries);
+        delete m_reducedDataSeries;
+        m_reducedDataSeries = nullptr;
+    }
+}
+
+void PCAChart::removeReducedDataSeries()
+{
+    if (!m_reducedDataSeries) return;
+
+    removeSeries(m_reducedDataSeries);
+    delete m_reducedDataSeries;
+    m_reducedDataSeries = nullptr;
 }
 

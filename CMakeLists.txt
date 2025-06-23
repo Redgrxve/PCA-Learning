@@ -16,9 +16,6 @@ if(UNIX)
     find_package(Eigen3 REQUIRED)
 endif()
 
-get_target_property(_qtcharts_location Qt${QT_VERSION_MAJOR}::Charts LOCATION)
-message(STATUS "QtCharts target location: ${_qtcharts_location}")
-
 set(PROJECT_SOURCES
         src/main.cpp
         src/gui/mainwindow.cpp

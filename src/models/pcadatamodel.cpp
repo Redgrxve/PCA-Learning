@@ -6,7 +6,7 @@ PCADataModel::PCADataModel(const Eigen::MatrixXd &data)
 {
     m_centeredData = PCA::meanSubtraction(data);
     m_covMatrix = PCA::findCovarianceMatrix(m_centeredData);
-    m_reducedData = PCA::performPCA(data);
+    // /m_reducedData = PCA::performPCA(data);
 }
 
 void PCADataModel::calculateCovMatrix()
@@ -14,7 +14,7 @@ void PCADataModel::calculateCovMatrix()
     m_covMatrix = PCA::findCovarianceMatrix(m_centeredData);
 }
 
-void PCADataModel::calculateReducedData()
+void PCADataModel::calculateReducedData(int componentsCount)
 {
-    //m_reducedData = PCA::eigenValues(m_centeredData, m_covMatrix);
+    m_reducedData = PCA::performPCA(m_data, componentsCount);
 }

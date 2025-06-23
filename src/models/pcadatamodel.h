@@ -10,7 +10,7 @@ public:
 
     inline void setData(const Eigen::MatrixXd &data) { m_data = data; }
 
-    inline const Eigen::MatrixXd &data()        const { return m_data; }
+    inline const Eigen::MatrixXd &initialData()        const { return m_data; }
     inline const Eigen::MatrixXd &centeredData()    const { return m_centeredData; }
     inline const Eigen::MatrixXd &reducedData() const { return m_reducedData; }
 
@@ -18,7 +18,7 @@ public:
 
     void meanSubtract();
     void calculateCovMatrix();
-    void calculateReducedData();
+    void calculateReducedData(int componentsCount);
 
 private:
     Eigen::MatrixXd m_data{};

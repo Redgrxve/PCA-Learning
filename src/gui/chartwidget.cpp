@@ -31,6 +31,9 @@ ChartWidget::ChartWidget(QWidget *parent)
             this, [this](bool checked){ showCenteredData(checked); });
     connect(ui->reducedDataCheckBox, &QCheckBox::clicked,
             this, [this](bool checked){ showReducedData(checked); });
+
+    connect(ui->performPCAButton, &QPushButton::clicked,
+            this, &ChartWidget::onPerformPCAClicked);
 }
 
 ChartWidget::~ChartWidget()
@@ -42,51 +45,37 @@ void ChartWidget::setModel(PCADataModel *model)
 {
     m_model = model;
 
+    const auto &initialData = model->initialData();
+    const int rows = static_cast<int>(initialData.rows());
+    const int cols = static_cast<int>(initialData.cols());
+    ui->componentsSpinBox->setMaximum(std::min(rows - 1, cols));
 
-    // m_model->calculateCovMatrix();
-    // std::cout << "\nReduced data\n";
-    // m_model->calculateReducedData();
-
+    ui->chartView->pcaChart()->clearAllDataSeries();
     setupSeries();
-    //showReducedData(true);
 }
 
 void ChartWidget::setupSeries()
 {
+    if (!m_model) return;
+
     PCAChart *pcaChart = ui->chartView->pcaChart();
-    if (!pcaChart) {
-        qDebug() << "void ChartWidget::setModel(PCADataModel *model): pcaChart is nullptr";
-        return;
-    }
 
-    auto dataSeries = new QScatterSeries(pcaChart);
+    auto initialDataSeries = new QScatterSeries(pcaChart);
     auto centeredDataSeries = new QScatterSeries(pcaChart);
-    auto reducedDataSeries = new QScatterSeries(pcaChart);
 
-    dataSeries->setMarkerSize(10.0);
+    initialDataSeries->setMarkerSize(10.0);
     centeredDataSeries->setMarkerSize(10.0);
-    reducedDataSeries->setMarkerSize(10.0);
 
-    const auto &data = m_model->data();
-    for (int i = 0; i < data.rows(); ++i) {
-        dataSeries->append(data(i, 0), data(i, 1));
-    }
+    const auto &initialData = m_model->initialData();
+    fillSeriesFromMatrix(initialDataSeries, initialData);
 
     const auto &centeredData = m_model->centeredData();
-    for (int i = 0; i < centeredData.rows(); ++i) {
-        centeredDataSeries->append(centeredData(i, 0), centeredData(i, 1));
-    }
+    fillSeriesFromMatrix(centeredDataSeries, centeredData);
 
-    const auto &reducedData = m_model->reducedData();
-    for (int i = 0; i < reducedData.rows(); ++i) {
-        reducedDataSeries->append(reducedData(i, 0), reducedData(i, 1));
-    }
-
-    pcaChart->setDataSeries(dataSeries);
+    pcaChart->setInitialDataSeries(initialDataSeries);
     pcaChart->setCenteredDataSeries(centeredDataSeries);
-    pcaChart->setReducedDataSeries(reducedDataSeries);
 
-    pcaChart->showCenteredDataSeries(false);
+    showCenteredData(false);
 }
 
 void ChartWidget::showInitialData(bool show)
@@ -116,8 +105,48 @@ void ChartWidget::setSliderValue(int value)
     ui->zoomPercentLabel->setText(QString::number(value) + "%");
 }
 
+void ChartWidget::fillSeriesFromMatrix(QScatterSeries* series, const Eigen::MatrixXd& matrix)
+{
+    series->clear();
+
+    if (matrix.rows() == 0) {
+        qWarning() << "Matrix is empty";
+        return;
+    }
+
+    if (matrix.cols() == 1) {
+        for (int i = 0; i < matrix.rows(); ++i)
+            series->append(matrix(i, 0), 0.0);
+    } else if (matrix.cols() >= 2) {
+        for (int i = 0; i < matrix.rows(); ++i)
+            series->append(matrix(i, 0), matrix(i, 1));
+    } else {
+        qWarning() << "Unsupported matrix shape: " << matrix.rows() << "x" << matrix.cols();
+    }
+}
+
 void ChartWidget::onSliderMoved(int pos)
 {
     const float zoomValue = pos / 100.f;
     ui->chartView->setZoom(zoomValue);
+}
+
+void ChartWidget::onPerformPCAClicked()
+{
+    if (!m_model) return;
+
+    PCAChart *pcaChart = ui->chartView->pcaChart();
+    pcaChart->removeReducedDataSeries();
+
+    auto reducedDataSeries = new QScatterSeries(pcaChart);
+    reducedDataSeries->setMarkerSize(10.0);
+
+    m_model->calculateReducedData(ui->componentsSpinBox->value());
+    const auto &reducedData = m_model->reducedData();
+
+    fillSeriesFromMatrix(reducedDataSeries, reducedData);
+
+    pcaChart->setReducedDataSeries(reducedDataSeries);
+    ui->reducedDataCheckBox->setChecked(true);
+    showReducedData();
 }
