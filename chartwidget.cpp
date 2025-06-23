@@ -4,6 +4,7 @@
 #include "ui_chartwidget.h"
 
 #include <QtCharts/QScatterSeries>
+#include <iostream>
 
 ChartWidget::ChartWidget(QWidget *parent)
     : QWidget(parent)
@@ -39,19 +40,32 @@ void ChartWidget::setModel(PCADataModel *model)
 {
     m_model = model;
 
+
+    // m_model->calculateCovMatrix();
+    // std::cout << "\nReduced data\n";
+    // m_model->calculateReducedData();
+
+    setupSeries();
+    //showReducedData(true);
+}
+
+void ChartWidget::setupSeries()
+{
     PCAChart *pcaChart = ui->chartView->pcaChart();
     if (!pcaChart) {
         qDebug() << "void ChartWidget::setModel(PCADataModel *model): pcaChart is nullptr";
         return;
     }
 
-    QScatterSeries *dataSeries = new QScatterSeries(pcaChart);
-    QScatterSeries *meanDataSeries = new QScatterSeries(pcaChart);
+    auto dataSeries = new QScatterSeries(pcaChart);
+    auto meanDataSeries = new QScatterSeries(pcaChart);
+    auto reducedDataSeries = new QScatterSeries(pcaChart);
 
     dataSeries->setMarkerSize(10.0);
     meanDataSeries->setMarkerSize(10.0);
+    reducedDataSeries->setMarkerSize(10.0);
 
-    const auto &data = model->data();
+    const auto &data = m_model->data();
     for (int i = 0; i < data.rows(); ++i) {
         dataSeries->append(data(i, 0), data(i, 1));
     }
@@ -61,9 +75,15 @@ void ChartWidget::setModel(PCADataModel *model)
         meanDataSeries->append(meanData(i, 0), meanData(i, 1));
     }
 
-    pcaChart->setDataSeries(dataSeries);
+    const auto &reducedData = m_model->reducedData();
+    for (int i = 0; i < reducedData.rows(); ++i) {
+        reducedDataSeries->append(reducedData(i, 0), reducedData(i, 1));
+    }
 
+    pcaChart->setDataSeries(dataSeries);
     pcaChart->setMeanDataSeries(meanDataSeries);
+    pcaChart->setReducedDataSeries(reducedDataSeries);
+
     pcaChart->showMeanDataSeries(false);
 }
 
@@ -79,6 +99,13 @@ void ChartWidget::showMeanData(bool show)
     if (!m_model) return;
 
     ui->chartView->pcaChart()->showMeanDataSeries(show);
+}
+
+void ChartWidget::showReducedData(bool show)
+{
+    if (!m_model) return;
+
+    ui->chartView->pcaChart()->showReducedDataSeries(show);
 }
 
 void ChartWidget::setSliderValue(int value)

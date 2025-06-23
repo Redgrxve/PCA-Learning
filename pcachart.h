@@ -14,9 +14,9 @@ class PCAChart : public QChart
 public:
     explicit PCAChart(QGraphicsItem *parent = nullptr);
 
-    QScatterSeries *dataSeries()        const { return m_dataSeries; }
-    QScatterSeries *meanDataSeries()    const { return m_meanDataSeries; }
-    QScatterSeries *reducedDataSeries() const { return m_reducedDataSeries; }
+    inline QScatterSeries *dataSeries()        const { return m_dataSeries; }
+    inline QScatterSeries *meanDataSeries()    const { return m_meanDataSeries; }
+    inline QScatterSeries *reducedDataSeries() const { return m_reducedDataSeries; }
 
     void setDataSeries(QScatterSeries *series);
     void setMeanDataSeries(QScatterSeries *series);

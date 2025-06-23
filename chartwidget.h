@@ -18,6 +18,7 @@ public:
     ~ChartWidget();
 
     void setModel(PCADataModel *model);
+    void setupSeries();
 
     void showInitialData(bool show = true);
     void showMeanData(bool show = true);

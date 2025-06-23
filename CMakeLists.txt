@@ -26,7 +26,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(pcalearn
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-        pca.h pca.cpp
+        pca.h
         chartwidget.h chartwidget.cpp chartwidget.ui
         customchartview.h customchartview.cpp
         pcachart.h pcachart.cpp
