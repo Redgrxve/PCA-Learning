@@ -8,6 +8,35 @@
 namespace PCA
 {
 
+std::pair<double, Eigen::VectorXd> powerIteration(const Eigen::MatrixXd &a)
+{
+    double tolerance = 1e-10;
+    int maxIter = 1000;
+
+    Eigen::VectorXd v = Eigen::VectorXd::Ones(a.cols());
+    v.normalize();
+
+    double lambda = 0.0;
+    double lambdaPrev = 0.0;
+
+    for (int i = 0; i < maxIter; ++i) {
+        Eigen::VectorXd av = a * v;
+        lambda = v.dot(av);
+        av.normalize();
+
+        if (abs(lambda - lambdaPrev) < tolerance)
+            break;
+
+        v = av;
+        lambdaPrev = lambda;
+    }
+
+    std::cout << "\nMy Eigen vec\n" << v << std::endl;
+    std::cout << "\nMy Eigen val\n" << lambda <<std::endl;
+
+    return {lambda, v};
+}
+
 Eigen::MatrixXd meanSubtraction(const Eigen::MatrixXd &data) {
     std::vector<double> avg(data.cols());
     Eigen::MatrixXd result = data;
@@ -54,12 +83,20 @@ Eigen::MatrixXd performPCA(const Eigen::MatrixXd &data, int componentsCount)
 {
     const auto centered = meanSubtraction(data);
     std::cout << "\nCentered\n" << centered << std::endl;
+
     const auto covMatrix = findCovarianceMatrix(centered);
     std::cout << "\nCov\n" << covMatrix << std::endl;
+
+    powerIteration(covMatrix);
+
     const auto eigVectors = findEigenVectors(covMatrix, 0);
     std::cout << "\nEigen vectors\n" << eigVectors << std::endl;
+
+    std::cout << "\nEig values:\n" << covMatrix.eigenvalues() << std::endl;
+
     const auto reducedData = reduceData(centered, eigVectors, componentsCount);
     std::cout << "\nProjection\n" << reducedData << std::endl;
+
     return reducedData;
 }
 };

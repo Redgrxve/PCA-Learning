@@ -48,7 +48,7 @@ Eigen::MatrixXd MainWindow::generateData()
 
 void MainWindow::onImportTriggered()
 {
-    QString filePath = QFileDialog::getOpenFileName(this, "Open Matrix File", "", "Text Files (*.txt);;All Files (*)");
+    QString filePath = QFileDialog::getOpenFileName(this, "Open Matrix File", "");
     if (filePath.isEmpty()) return;
 
     Eigen::MatrixXd matrix = loadMatrixFromFile(filePath);
