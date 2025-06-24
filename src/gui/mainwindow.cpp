@@ -1,5 +1,10 @@
 #include "mainwindow.h"
 #include "pcadatamodel.h"
+#include "utils.h"
+
+#include <QFileDialog>
+#include <QMessageBox>
+
 #include "./ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -8,9 +13,12 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    m_dataModel = new PCADataModel(generateData());
+    m_dataModel = new PCADataModel;
 
-    ui->chartWidget->setModel(m_dataModel);
+    connect(ui->importAction, &QAction::triggered,
+            this, &MainWindow::onImportTriggered);
+
+    // ui->chartWidget->setModel(m_dataModel);
    // ui->chartWidget->showInitialData();
 }
 
@@ -36,5 +44,20 @@ Eigen::MatrixXd MainWindow::generateData()
 
     //const auto c = PCA::meanSubtraction(a);
     return a;
+}
+
+void MainWindow::onImportTriggered()
+{
+    QString filePath = QFileDialog::getOpenFileName(this, "Open Matrix File", "", "Text Files (*.txt);;All Files (*)");
+    if (filePath.isEmpty()) return;
+
+    Eigen::MatrixXd matrix = loadMatrixFromFile(filePath);
+    if (matrix.size() == 0) {
+        QMessageBox::warning(this, "Error", "Failed to load matrix from file.");
+        return;
+    }
+
+    m_dataModel->setInitialData(matrix);
+    ui->chartWidget->setModel(m_dataModel);
 }
 

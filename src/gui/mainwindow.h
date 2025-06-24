@@ -24,6 +24,9 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    PCADataModel *m_dataModel;
+    PCADataModel *m_dataModel{};
+
+private slots:
+    void onImportTriggered();
 };
 #endif // MAINWINDOW_H

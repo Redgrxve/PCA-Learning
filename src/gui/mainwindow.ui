@@ -33,12 +33,12 @@
     <property name="title">
      <string>Данные</string>
     </property>
-    <addaction name="action"/>
+    <addaction name="importAction"/>
    </widget>
    <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="action">
+  <action name="importAction">
    <property name="text">
     <string>Импортировать</string>
    </property>

@@ -5,7 +5,7 @@ PCAChartView::PCAChartView(QWidget *parent)
     : CustomChartView(parent)
 {
     m_chart = new PCAChart;
-    m_chart->setAxisRange(0, 10, 0, 10);
+    m_chart->setAxisRange(0, 100, 0, 100);
     setChart(m_chart);
 }
 

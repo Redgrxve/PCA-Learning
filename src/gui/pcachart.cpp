@@ -27,7 +27,7 @@ PCAChart::PCAChart(QGraphicsItem *parent)
     yAxisLine->attachAxis(axisX);
     yAxisLine->attachAxis(axisY);
 
-    legend()->hide();
+    //legend()->hide();
 }
 
 void PCAChart::setInitialDataSeries(QScatterSeries *series)
@@ -64,6 +64,9 @@ void PCAChart::setAxisRange(qreal minX, qreal maxX, qreal minY, qreal maxY)
 {
     axisX->setRange(minX, maxX);
     axisY->setRange(minY, maxY);
+
+    axisX->setTickCount(10);
+    axisY->setTickCount(10);
 
     xAxisLine->clear();
     yAxisLine->clear();

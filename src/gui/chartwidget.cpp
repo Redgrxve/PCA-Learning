@@ -45,13 +45,17 @@ void ChartWidget::setModel(PCADataModel *model)
 {
     m_model = model;
 
+    setupSeries();
+
     const auto &initialData = model->initialData();
     const int rows = static_cast<int>(initialData.rows());
     const int cols = static_cast<int>(initialData.cols());
     ui->componentsSpinBox->setMaximum(std::min(rows - 1, cols));
 
-    ui->chartView->pcaChart()->clearAllDataSeries();
-    setupSeries();
+    ui->initialDataCheckBox->setChecked(true);
+
+    showInitialData(true);
+    showCenteredData(false);
 }
 
 void ChartWidget::setupSeries()
@@ -59,9 +63,13 @@ void ChartWidget::setupSeries()
     if (!m_model) return;
 
     PCAChart *pcaChart = ui->chartView->pcaChart();
+    pcaChart->clearAllDataSeries();
 
     auto initialDataSeries = new QScatterSeries(pcaChart);
     auto centeredDataSeries = new QScatterSeries(pcaChart);
+
+    initialDataSeries->setName("Исходные данные");
+    centeredDataSeries->setName("Центрированные данные");
 
     initialDataSeries->setMarkerSize(10.0);
     centeredDataSeries->setMarkerSize(10.0);
@@ -74,8 +82,6 @@ void ChartWidget::setupSeries()
 
     pcaChart->setInitialDataSeries(initialDataSeries);
     pcaChart->setCenteredDataSeries(centeredDataSeries);
-
-    showCenteredData(false);
 }
 
 void ChartWidget::showInitialData(bool show)
@@ -139,6 +145,7 @@ void ChartWidget::onPerformPCAClicked()
     pcaChart->removeReducedDataSeries();
 
     auto reducedDataSeries = new QScatterSeries(pcaChart);
+    reducedDataSeries->setName("Данные после PCA");
     reducedDataSeries->setMarkerSize(10.0);
 
     m_model->calculateReducedData(ui->componentsSpinBox->value());

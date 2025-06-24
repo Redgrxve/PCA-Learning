@@ -13,90 +13,82 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
+  <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0">
+        <widget class="QCheckBox" name="initialDataCheckBox">
+         <property name="minimumSize">
+          <size>
+           <width>121</width>
+           <height>21</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Исходные данные</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QCheckBox" name="eigVectorsCheckBox">
+         <property name="text">
+          <string>Собственные векторы</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QCheckBox" name="centeredDataCheckBox">
+         <property name="minimumSize">
+          <size>
+           <width>76</width>
+           <height>21</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Центрированные данные</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QCheckBox" name="reducedDataCheckBox">
+         <property name="text">
+          <string>Данные после PCA</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout">
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
          <item>
-          <widget class="QCheckBox" name="initialDataCheckBox">
-           <property name="minimumSize">
-            <size>
-             <width>121</width>
-             <height>21</height>
-            </size>
-           </property>
+          <widget class="QLabel" name="label">
            <property name="text">
-            <string>Исходные данные</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
+            <string>Число ГК</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="centeredDataCheckBox">
-           <property name="minimumSize">
-            <size>
-             <width>76</width>
-             <height>21</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>Центрированные данные</string>
+          <widget class="QSpinBox" name="componentsSpinBox">
+           <property name="minimum">
+            <number>1</number>
            </property>
           </widget>
          </item>
         </layout>
        </item>
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout_2">
-         <item>
-          <widget class="QCheckBox" name="eigVectorsCheckBox">
-           <property name="text">
-            <string>Собственные векторы</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="reducedDataCheckBox">
-           <property name="text">
-            <string>Данные после PCA</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_3">
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_4">
-           <item>
-            <widget class="QLabel" name="label">
-             <property name="text">
-              <string>Число ГК</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QSpinBox" name="componentsSpinBox">
-             <property name="minimum">
-              <number>1</number>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <widget class="QPushButton" name="performPCAButton">
-           <property name="text">
-            <string>Выполнить PCA</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <widget class="QPushButton" name="performPCAButton">
+         <property name="text">
+          <string>Выполнить PCA</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
