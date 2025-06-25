@@ -41,14 +41,33 @@ def perform_pca(data):
     print("Собственные векторы (компоненты):\n", pca.components_)
     print("\nПроецированные данные:\n", projected)
 
-    # График
+    # ==== Регрессия между PC1 и PC2 ====
+    x = projected[:, 0]
+    y = projected[:, 1]
+
+    # Добавляем столбец единиц для bias
+    X_design = np.vstack([x, np.ones_like(x)]).T
+    coeffs, _, _, _ = np.linalg.lstsq(X_design, y, rcond=None)  # [slope, intercept]
+
+    slope, intercept = coeffs
+    print(f"\nЛинейная регрессия: PC2 ≈ {slope:.3f} * PC1 + {intercept:.3f}")
+
+    # Построим линию регрессии
+    x_line = np.linspace(x.min(), x.max(), 100)
+    y_line = slope * x_line + intercept
+
+    # ==== График ====
     plt.figure(figsize=(8, 6))
-    plt.scatter(projected[:, 0], projected[:, 1], c='blue', s=50)
-    plt.title("PCA: проекция на 2 главные компоненты")
+    plt.scatter(x, y, c='blue', s=50, label='Проекция PCA')
+    plt.plot(x_line, y_line, 'r--', linewidth=2, label='Линия регрессии')
+
+    plt.title("PCA: проекция и регрессия")
     plt.xlabel(f"PC1 ({pca.explained_variance_ratio_[0]*100:.1f}%)")
     plt.ylabel(f"PC2 ({pca.explained_variance_ratio_[1]*100:.1f}%)")
+    plt.legend()
     plt.grid(True)
     plt.axis('equal')
+    plt.tight_layout()
     plt.show()
 
 def main():

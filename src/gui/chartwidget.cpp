@@ -4,7 +4,7 @@
 #include "ui_chartwidget.h"
 
 #include <QtCharts/QScatterSeries>
-#include <iostream>
+#include <QtCharts/QLineSeries>
 
 ChartWidget::ChartWidget(QWidget *parent)
     : QWidget(parent)
@@ -54,6 +54,7 @@ void ChartWidget::setModel(PCADataModel *model)
 
     showInitialData(true);
     showCenteredData(false);
+    showInitialRegression(true);
 }
 
 void ChartWidget::setupSeries()
@@ -65,15 +66,19 @@ void ChartWidget::setupSeries()
 
     auto initialDataSeries = new QScatterSeries(pcaChart);
     auto centeredDataSeries = new QScatterSeries(pcaChart);
+    auto initialRegressionSeries = new QLineSeries(pcaChart);
 
     const auto &initialData = m_model->initialData();
     const auto &centeredData = m_model->centeredData();
+    const auto &initialRegression = m_model->initialRegression();
 
-    fillSeriesFromMatrix(initialDataSeries, initialData);
-    fillSeriesFromMatrix(centeredDataSeries, centeredData);
+    fillScatterSeries(initialDataSeries, initialData);
+    fillScatterSeries(centeredDataSeries, centeredData);
+    fillRegressionSeries(initialRegressionSeries, initialRegression);
 
     pcaChart->setInitialDataSeries(initialDataSeries);
     pcaChart->setCenteredDataSeries(centeredDataSeries);
+    pcaChart->setInitialRegressionSeries(initialRegressionSeries);
 }
 
 void ChartWidget::showInitialData(bool show)
@@ -100,13 +105,29 @@ void ChartWidget::showReducedData(bool show)
     ui->reducedDataCheckBox->setChecked(show);
 }
 
+void ChartWidget::showInitialRegression(bool show)
+{
+    if (!m_model) return;
+
+    ui->chartView->pcaChart()->showInitialRegression(show);
+    ui->initialRegressionCheckBox->setChecked(show);
+}
+
+void ChartWidget::showPCARegression(bool show)
+{
+    if (!m_model) return;
+
+    ui->chartView->pcaChart()->showPCARegression(show);
+    ui->pcaRegressionCheckBox->setChecked(show);
+}
+
 void ChartWidget::setSliderValue(int value)
 {
     ui->zoomSlider->setValue(value);
     ui->zoomPercentLabel->setText(QString::number(value) + "%");
 }
 
-void ChartWidget::fillSeriesFromMatrix(QScatterSeries* series, const Eigen::MatrixXd& matrix)
+void ChartWidget::fillScatterSeries(QScatterSeries *series, const Eigen::MatrixXd &matrix)
 {
     series->clear();
 
@@ -126,6 +147,19 @@ void ChartWidget::fillSeriesFromMatrix(QScatterSeries* series, const Eigen::Matr
     }
 }
 
+void ChartWidget::fillRegressionSeries(QLineSeries *series, const Eigen::MatrixXd &matrix)
+{
+    series->clear();
+
+    if (matrix.rows() == 0) {
+        qWarning() << "Matrix is empty";
+        return;
+    }
+
+    series->append(matrix(0, 0), matrix(0, 1));
+    series->append(matrix(1, 0), matrix(1, 1));
+}
+
 void ChartWidget::onSliderMoved(int pos)
 {
     const float zoomValue = pos / 100.f;
@@ -141,9 +175,9 @@ void ChartWidget::onPerformPCAClicked()
 
     auto reducedDataSeries = new QScatterSeries(pcaChart);
 
-    m_model->calculateReducedData(ui->componentsSpinBox->value());
+    m_model->computeReducedData(ui->componentsSpinBox->value());
     const auto &reducedData = m_model->reducedData();
-    fillSeriesFromMatrix(reducedDataSeries, reducedData);
+    fillScatterSeries(reducedDataSeries, reducedData);
 
     pcaChart->setReducedDataSeries(reducedDataSeries);
 

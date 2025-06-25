@@ -62,14 +62,14 @@
         </widget>
        </item>
        <item row="0" column="2">
-        <widget class="QCheckBox" name="checkBox">
+        <widget class="QCheckBox" name="initialRegressionCheckBox">
          <property name="text">
           <string>Регрессия до PCA</string>
          </property>
         </widget>
        </item>
        <item row="1" column="2">
-        <widget class="QCheckBox" name="checkBox_2">
+        <widget class="QCheckBox" name="pcaRegressionCheckBox">
          <property name="text">
           <string>Регрессия после PCA</string>
          </property>

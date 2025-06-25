@@ -72,6 +72,31 @@ void PCAChart::addAndAttachSeries(QScatterSeries *series)
     series->setMarkerSize(m_scatterSeriesMarkerSize);
 }
 
+void PCAChart::addAndAttachSeries(QLineSeries *series)
+{
+    addSeries(series);
+    series->attachAxis(axisX);
+    series->attachAxis(axisY);
+
+    QPen pen(Qt::darkGreen);
+    pen.setWidth(2);
+    series->setPen(pen);
+}
+
+void PCAChart::setInitialRegressionSeries(QLineSeries *series)
+{
+    m_initialRegressionSeries = series;
+    m_initialRegressionSeries->setName("Регрессия до PCA");
+    addAndAttachSeries(m_initialRegressionSeries);
+}
+
+void PCAChart::setPCARegressionSeries(QLineSeries *series)
+{
+    m_pcaRegressionSeries = series;
+    m_pcaRegressionSeries->setName("Регрессия после PCA");
+    addAndAttachSeries(m_pcaRegressionSeries);
+}
+
 void PCAChart::setAxisRange(qreal minX, qreal maxX, qreal minY, qreal maxY)
 {
     axisX->setRange(minX, maxX);
@@ -134,33 +159,48 @@ void PCAChart::showReducedDataSeries(bool show)
         m_reducedDataSeries->hide();
 }
 
+void PCAChart::showInitialRegression(bool show)
+{
+    if (!m_initialRegressionSeries) return;
+
+    if (show)
+        m_initialRegressionSeries->show();
+    else
+        m_initialRegressionSeries->hide();
+}
+
+void PCAChart::showPCARegression(bool show)
+{
+    if (!m_pcaRegressionSeries) return;
+
+    if (show)
+        m_pcaRegressionSeries->show();
+    else
+        m_pcaRegressionSeries->hide();
+}
+
 void PCAChart::clearAllDataSeries()
 {
-    if (m_initialDataSeries) {
-        removeSeries(m_initialDataSeries);
-        delete m_initialDataSeries;
-        m_initialDataSeries = nullptr;
-    }
+    if (m_initialDataSeries)
+        deleteSeries(m_initialDataSeries);
 
-    if (m_centeredDataSeries) {
-        removeSeries(m_centeredDataSeries);
-        delete m_centeredDataSeries;
-        m_centeredDataSeries = nullptr;
-    }
+    if (m_centeredDataSeries)
+        deleteSeries(m_centeredDataSeries);
 
-    if (m_reducedDataSeries) {
-        removeSeries(m_reducedDataSeries);
-        delete m_reducedDataSeries;
-        m_reducedDataSeries = nullptr;
-    }
+    if (m_reducedDataSeries)
+        deleteSeries(m_reducedDataSeries);
+
+    if (m_initialRegressionSeries)
+        deleteSeries(m_initialRegressionSeries);
+
+    if (m_pcaRegressionSeries)
+        deleteSeries(m_pcaRegressionSeries);
 }
 
 void PCAChart::removeReducedDataSeries()
 {
     if (!m_reducedDataSeries) return;
 
-    removeSeries(m_reducedDataSeries);
-    delete m_reducedDataSeries;
-    m_reducedDataSeries = nullptr;
+    deleteSeries(m_reducedDataSeries);
 }
 

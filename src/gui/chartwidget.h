@@ -4,12 +4,13 @@
 #include <QWidget>
 #include <Eigen/Dense>
 
-class PCADataModel;
-class QScatterSeries;
-
 namespace Ui {
 class ChartWidget;
 }
+
+class PCADataModel;
+class QScatterSeries;
+class QLineSeries;
 
 class ChartWidget : public QWidget
 {
@@ -25,13 +26,16 @@ public:
     void showInitialData(bool show = true);
     void showCenteredData(bool show = true);
     void showReducedData(bool show = true);
+    void showInitialRegression(bool show = true);
+    void showPCARegression(bool show = true);
 
 private:
     Ui::ChartWidget *ui;
     PCADataModel *m_model{};
 
     void setSliderValue(int value);
-    void fillSeriesFromMatrix(QScatterSeries* series, const Eigen::MatrixXd& matrix);
+    void fillScatterSeries(QScatterSeries* series, const Eigen::MatrixXd& matrix);
+    void fillRegressionSeries(QLineSeries* series, const Eigen::MatrixXd &matrix);
 
 private slots:
     void onSliderMoved(int pos);
