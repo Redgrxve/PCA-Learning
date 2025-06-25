@@ -52,8 +52,6 @@ void ChartWidget::setModel(PCADataModel *model)
     const int cols = static_cast<int>(initialData.cols());
     ui->componentsSpinBox->setMaximum(std::min(rows - 1, cols));
 
-    ui->initialDataCheckBox->setChecked(true);
-
     showInitialData(true);
     showCenteredData(false);
 }
@@ -68,16 +66,10 @@ void ChartWidget::setupSeries()
     auto initialDataSeries = new QScatterSeries(pcaChart);
     auto centeredDataSeries = new QScatterSeries(pcaChart);
 
-    initialDataSeries->setName("Исходные данные");
-    centeredDataSeries->setName("Центрированные данные");
-
-    initialDataSeries->setMarkerSize(10.0);
-    centeredDataSeries->setMarkerSize(10.0);
-
     const auto &initialData = m_model->initialData();
-    fillSeriesFromMatrix(initialDataSeries, initialData);
-
     const auto &centeredData = m_model->centeredData();
+
+    fillSeriesFromMatrix(initialDataSeries, initialData);
     fillSeriesFromMatrix(centeredDataSeries, centeredData);
 
     pcaChart->setInitialDataSeries(initialDataSeries);
@@ -89,6 +81,7 @@ void ChartWidget::showInitialData(bool show)
     if (!m_model) return;
 
     ui->chartView->pcaChart()->showDataSeries(show);
+    ui->initialDataCheckBox->setChecked(show);
 }
 
 void ChartWidget::showCenteredData(bool show)
@@ -96,6 +89,7 @@ void ChartWidget::showCenteredData(bool show)
     if (!m_model) return;
 
     ui->chartView->pcaChart()->showCenteredDataSeries(show);
+    ui->centeredDataCheckBox->setChecked(show);
 }
 
 void ChartWidget::showReducedData(bool show)
@@ -103,6 +97,7 @@ void ChartWidget::showReducedData(bool show)
     if (!m_model) return;
 
     ui->chartView->pcaChart()->showReducedDataSeries(show);
+    ui->reducedDataCheckBox->setChecked(show);
 }
 
 void ChartWidget::setSliderValue(int value)
@@ -145,15 +140,13 @@ void ChartWidget::onPerformPCAClicked()
     pcaChart->removeReducedDataSeries();
 
     auto reducedDataSeries = new QScatterSeries(pcaChart);
-    reducedDataSeries->setName("Данные после PCA");
-    reducedDataSeries->setMarkerSize(10.0);
 
     m_model->calculateReducedData(ui->componentsSpinBox->value());
     const auto &reducedData = m_model->reducedData();
-
     fillSeriesFromMatrix(reducedDataSeries, reducedData);
 
     pcaChart->setReducedDataSeries(reducedDataSeries);
-    ui->reducedDataCheckBox->setChecked(true);
+
     showReducedData();
+    showInitialData(false);
 }

@@ -29,9 +29,11 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
         src/gui/chartwidget.cpp src/gui/chartwidget.h src/gui/chartwidget.ui src/gui/customchartview.cpp src/gui/customchartview.h src/gui/pcachart.cpp src/gui/pcachart.h src/gui/pcachartview.cpp src/gui/pcachartview.h
         src/models/pcadatamodel.h
-        src/utils/pca.h
+        src/utils/latools.h
         src/models/pcadatamodel.cpp
         src/utils/utils.h
+        src/utils/jacobieigensolver.cpp src/utils/jacobieigensolver.h
+
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET pcalearn APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

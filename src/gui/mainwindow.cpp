@@ -17,9 +17,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->importAction, &QAction::triggered,
             this, &MainWindow::onImportTriggered);
-
-    // ui->chartWidget->setModel(m_dataModel);
-   // ui->chartWidget->showInitialData();
 }
 
 MainWindow::~MainWindow()
@@ -59,5 +56,7 @@ void MainWindow::onImportTriggered()
 
     m_dataModel->setInitialData(matrix);
     ui->chartWidget->setModel(m_dataModel);
+
+    ui->statusbar->showMessage(filePath, 100000);
 }
 

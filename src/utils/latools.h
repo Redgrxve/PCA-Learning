@@ -1,16 +1,18 @@
-#ifndef PCA_H
-#define PCA_H
+#ifndef LATOOLS_H
+#define LATOOLS_H
 
 #include <Eigen/Dense>
 #include <iostream>
 #include <qtypes.h>
 
-namespace PCA
+#include "jacobieigensolver.h"
+
+namespace LATools
 {
 
 std::pair<double, Eigen::VectorXd> powerIteration(const Eigen::MatrixXd &a)
 {
-    double tolerance = 1e-10;
+    double tolerance = 1e-6;
     int maxIter = 1000;
 
     Eigen::VectorXd v = Eigen::VectorXd::Ones(a.cols());
@@ -36,6 +38,8 @@ std::pair<double, Eigen::VectorXd> powerIteration(const Eigen::MatrixXd &a)
 
     return {lambda, v};
 }
+
+
 
 Eigen::MatrixXd meanSubtraction(const Eigen::MatrixXd &data) {
     std::vector<double> avg(data.cols());
@@ -73,32 +77,43 @@ Eigen::MatrixXd findEigenVectors(const Eigen::MatrixXd &cov, int components) {
     return eig.eigenvectors().rightCols(components);
 }
 
-Eigen::MatrixXd reduceData(const Eigen::MatrixXd &data, const Eigen::MatrixXd &eigVectors, int componentsCount)
+Eigen::MatrixXd reduceData(const Eigen::MatrixXd &data,
+                           const Eigen::MatrixXd &eigVectors,
+                           int componentsCount)
 {
-    Eigen::MatrixXd targetVectors = eigVectors.rightCols(componentsCount);
+    Eigen::MatrixXd targetVectors = eigVectors.leftCols(componentsCount);
     return data * targetVectors;
 }
 
-Eigen::MatrixXd performPCA(const Eigen::MatrixXd &data, int componentsCount)
+Eigen::MatrixXd performPCA(const Eigen::MatrixXd &data,
+                           bool isCentered = false,
+                           int componentsCount = 2)
 {
-    const auto centered = meanSubtraction(data);
-    std::cout << "\nCentered\n" << centered << std::endl;
+    Eigen::MatrixXd   covMatrix;
+    Eigen::MatrixXd   reducedData;
+    JacobiEigenSolver jacobiEigen;
 
-    const auto covMatrix = findCovarianceMatrix(centered);
-    std::cout << "\nCov\n" << covMatrix << std::endl;
+    if (!isCentered) {
+        const auto centered = meanSubtraction(data);
+        covMatrix = findCovarianceMatrix(centered);
+        jacobiEigen.compute(covMatrix);
+        reducedData = reduceData(centered, jacobiEigen.eigenvectors(), componentsCount);
+    } else {
+        covMatrix = findCovarianceMatrix(data);
+        jacobiEigen.compute(covMatrix);
+        reducedData = reduceData(data, jacobiEigen.eigenvectors(), componentsCount);
+    }
 
-    powerIteration(covMatrix);
-
-    const auto eigVectors = findEigenVectors(covMatrix, 0);
-    std::cout << "\nEigen vectors\n" << eigVectors << std::endl;
-
-    std::cout << "\nEig values:\n" << covMatrix.eigenvalues() << std::endl;
-
-    const auto reducedData = reduceData(centered, eigVectors, componentsCount);
-    std::cout << "\nProjection\n" << reducedData << std::endl;
+#ifdef QT_DEBUG
+    //std::cout << "\nCentered\n"     << centered                   << std::endl;
+    std::cout << "\nCov\n"          << covMatrix                  << std::endl;
+    std::cout << "\nEigenvectors\n" << jacobiEigen.eigenvectors() << std::endl;
+    std::cout << "\nEigenvalues\n"  << jacobiEigen.eigenvalues()  << std::endl;
+    std::cout << "\nProjection\n"   << reducedData                << std::endl;
+#endif
 
     return reducedData;
 }
 };
 
-#endif // PCA_H
+#endif // LATOOLS_H

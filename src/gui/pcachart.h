@@ -35,6 +35,7 @@ public:
 
 private:
     void addAndAttachSeries(QAbstractSeries *series);
+    void addAndAttachSeries(QScatterSeries *series);
 
     QLineSeries *xAxisLine{};
     QLineSeries *yAxisLine{};
@@ -44,5 +45,7 @@ private:
     QScatterSeries *m_initialDataSeries{};
     QScatterSeries *m_centeredDataSeries{};
     QScatterSeries *m_reducedDataSeries{};
+
+    qreal m_scatterSeriesMarkerSize = 10.0;
 };
 #endif // CUSTOMCHART_H

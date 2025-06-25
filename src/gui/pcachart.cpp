@@ -33,18 +33,21 @@ PCAChart::PCAChart(QGraphicsItem *parent)
 void PCAChart::setInitialDataSeries(QScatterSeries *series)
 {
     m_initialDataSeries = series;
+    m_initialDataSeries->setName(tr("Исходные данные"));
     addAndAttachSeries(series);
 }
 
 void PCAChart::setCenteredDataSeries(QScatterSeries *series)
 {
     m_centeredDataSeries = series;
+    m_centeredDataSeries->setName(tr("Центрированные данные"));
     addAndAttachSeries(series);
 }
 
 void PCAChart::setReducedDataSeries(QScatterSeries *series)
 {
     m_reducedDataSeries = series;
+    m_reducedDataSeries->setName(tr("Проекция после PCA"));
     addAndAttachSeries(series);
 }
 
@@ -58,6 +61,15 @@ void PCAChart::addAndAttachSeries(QAbstractSeries *series)
     addSeries(series);
     series->attachAxis(axisX);
     series->attachAxis(axisY);
+}
+
+void PCAChart::addAndAttachSeries(QScatterSeries *series)
+{
+    addSeries(series);
+    series->attachAxis(axisX);
+    series->attachAxis(axisY);
+
+    series->setMarkerSize(m_scatterSeriesMarkerSize);
 }
 
 void PCAChart::setAxisRange(qreal minX, qreal maxX, qreal minY, qreal maxY)
