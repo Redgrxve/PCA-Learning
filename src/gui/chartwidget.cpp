@@ -83,6 +83,10 @@ void ChartWidget::setupSeries()
     pcaChart->setInitialDataSeries(initialDataSeries);
     pcaChart->setCenteredDataSeries(centeredDataSeries);
     pcaChart->setInitialRegressionSeries(initialRegressionSeries);
+
+    double maxX = initialData.col(0).maxCoeff();
+    double maxY = initialData.col(1).maxCoeff();
+    pcaChart->setAxisRange(0.0, maxX, 0.0, maxY);
 }
 
 void ChartWidget::showInitialData(bool show)
