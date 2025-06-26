@@ -1,3 +1,5 @@
+datasets/datasets
+
 # Build directories
 **/build/
 **/Debug/
