@@ -63,8 +63,11 @@ private:
     QLineSeries *m_initialRegressionSeries{};
     QLineSeries *m_pcaRegressionSeries{};
 
+
     QColor m_axesLinesColor = Qt::black;
-    int  m_axesLinesWith  = 1;
+    int  m_axesLinesWith = 1;
+    int m_axesXTickCount = 25;
+    int m_axesYTickCount = 25;
 
     qreal m_scatterSeriesMarkerSize = 10.0;
 

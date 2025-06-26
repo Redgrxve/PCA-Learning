@@ -42,6 +42,9 @@
    <property name="text">
     <string>Импортировать</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
+   </property>
   </action>
  </widget>
  <customwidgets>

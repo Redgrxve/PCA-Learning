@@ -120,8 +120,8 @@ void PCAChart::setAxisRange(qreal minX, qreal maxX, qreal minY, qreal maxY)
     axisX->setRange(minX, maxX);
     axisY->setRange(minY, maxY);
 
-    axisX->setTickCount(10);
-    axisY->setTickCount(10);
+    axisX->setTickCount(m_axesXTickCount);
+    axisY->setTickCount(m_axesYTickCount);
 
     xAxisLine->clear();
     yAxisLine->clear();
