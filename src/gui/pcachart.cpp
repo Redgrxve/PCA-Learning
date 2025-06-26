@@ -51,9 +51,27 @@ void PCAChart::setReducedDataSeries(QScatterSeries *series)
     addAndAttachSeries(series);
 }
 
-void PCAChart::removeDataSeries()
+void PCAChart::removeInitialDataSeries()
 {
-    removeSeries(m_initialDataSeries);
+    if (!m_initialDataSeries) return;
+
+    deleteSeries(m_initialDataSeries);
+}
+
+void PCAChart::removeReducedDataSeries()
+{
+    if (!m_reducedDataSeries) return;
+
+    deleteSeries(m_reducedDataSeries);
+}
+
+
+void PCAChart::removePCASeries()
+{
+    removeReducedDataSeries();
+
+    if (m_pcaRegressionSeries)
+        deleteSeries(m_pcaRegressionSeries);
 }
 
 void PCAChart::addAndAttachSeries(QAbstractSeries *series)
@@ -78,8 +96,8 @@ void PCAChart::addAndAttachSeries(QLineSeries *series)
     series->attachAxis(axisX);
     series->attachAxis(axisY);
 
-    QPen pen(Qt::darkGreen);
-    pen.setWidth(2);
+    QPen pen(m_lineSeriesColor);
+    pen.setWidth(m_lineSeriesWidth);
     series->setPen(pen);
 }
 
@@ -119,8 +137,8 @@ void PCAChart::setAxisRange(qreal minX, qreal maxX, qreal minY, qreal maxY)
 
 void PCAChart::setAxesLinesColor(const QColor &color)
 {
-    QPen axisPen(color);
-    axisPen.setWidth(2);
+    QPen axisPen(m_axesLinesColor);
+    axisPen.setWidth(m_axesLinesWith);
 
     xAxisLine->setPen(axisPen);
     yAxisLine->setPen(axisPen);
@@ -196,11 +214,3 @@ void PCAChart::clearAllDataSeries()
     if (m_pcaRegressionSeries)
         deleteSeries(m_pcaRegressionSeries);
 }
-
-void PCAChart::removeReducedDataSeries()
-{
-    if (!m_reducedDataSeries) return;
-
-    deleteSeries(m_reducedDataSeries);
-}
-

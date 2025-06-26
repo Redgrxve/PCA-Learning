@@ -11,6 +11,7 @@ class ChartWidget;
 class PCADataModel;
 class QScatterSeries;
 class QLineSeries;
+class RegressionModel;
 
 class ChartWidget : public QWidget
 {
@@ -34,8 +35,8 @@ private:
     PCADataModel *m_model{};
 
     void setSliderValue(int value);
-    void fillScatterSeries(QScatterSeries* series, const Eigen::MatrixXd& matrix);
-    void fillRegressionSeries(QLineSeries* series, const Eigen::MatrixXd &matrix);
+    void fillScatterSeries(QScatterSeries *series, const Eigen::MatrixXd &matrix);
+    void fillRegressionSeries(QLineSeries *series, const RegressionModel &regModel);
 
 private slots:
     void onSliderMoved(int pos);

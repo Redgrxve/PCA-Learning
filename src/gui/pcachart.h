@@ -35,8 +35,9 @@ public:
     void showPCARegression(bool show = true);
 
     void clearAllDataSeries();
+    void removeInitialDataSeries();
     void removeReducedDataSeries();
-    void removeDataSeries();
+    void removePCASeries();
 
 private:
     template<typename T>
@@ -62,7 +63,12 @@ private:
     QLineSeries *m_initialRegressionSeries{};
     QLineSeries *m_pcaRegressionSeries{};
 
+    QColor m_axesLinesColor = Qt::black;
+    int  m_axesLinesWith  = 1;
+
     qreal m_scatterSeriesMarkerSize = 10.0;
+
+    QColor m_lineSeriesColor = Qt::red;
     int m_lineSeriesWidth = 2;
 };
 #endif // CUSTOMCHART_H

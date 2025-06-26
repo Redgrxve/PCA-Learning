@@ -31,6 +31,10 @@ ChartWidget::ChartWidget(QWidget *parent)
             this, [this](bool checked){ showCenteredData(checked); });
     connect(ui->reducedDataCheckBox, &QCheckBox::clicked,
             this, [this](bool checked){ showReducedData(checked); });
+    connect(ui->initialRegressionCheckBox, &QCheckBox::clicked,
+            this, [this](bool checked){ showInitialRegression(checked); });
+    connect(ui->pcaRegressionCheckBox, &QCheckBox::clicked,
+            this, [this](bool checked){ showPCARegression(checked); });
 
     connect(ui->performPCAButton, &QPushButton::clicked,
             this, &ChartWidget::onPerformPCAClicked);
@@ -147,17 +151,12 @@ void ChartWidget::fillScatterSeries(QScatterSeries *series, const Eigen::MatrixX
     }
 }
 
-void ChartWidget::fillRegressionSeries(QLineSeries *series, const Eigen::MatrixXd &matrix)
+void ChartWidget::fillRegressionSeries(QLineSeries *series, const RegressionModel &regModel)
 {
     series->clear();
 
-    if (matrix.rows() == 0) {
-        qWarning() << "Matrix is empty";
-        return;
-    }
-
-    series->append(matrix(0, 0), matrix(0, 1));
-    series->append(matrix(1, 0), matrix(1, 1));
+    series->append(regModel.p1);
+    series->append(regModel.p2);
 }
 
 void ChartWidget::onSliderMoved(int pos)
@@ -171,16 +170,24 @@ void ChartWidget::onPerformPCAClicked()
     if (!m_model) return;
 
     PCAChart *pcaChart = ui->chartView->pcaChart();
-    pcaChart->removeReducedDataSeries();
+    pcaChart->removePCASeries();
 
     auto reducedDataSeries = new QScatterSeries(pcaChart);
+    auto pcaRegressionSeries = new QLineSeries(pcaChart);
 
     m_model->computeReducedData(ui->componentsSpinBox->value());
+
     const auto &reducedData = m_model->reducedData();
+    const auto &pcaRegression = m_model->pcaRegression();
+
     fillScatterSeries(reducedDataSeries, reducedData);
+    fillRegressionSeries(pcaRegressionSeries, pcaRegression);
 
     pcaChart->setReducedDataSeries(reducedDataSeries);
+    pcaChart->setPCARegressionSeries(pcaRegressionSeries);
 
     showReducedData();
+    showPCARegression();
     showInitialData(false);
+    showInitialRegression(false);
 }

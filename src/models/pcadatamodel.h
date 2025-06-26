@@ -2,13 +2,19 @@
 #define PCADATAMODEL_H
 
 #include <Eigen/Dense>
+#include <QPoint>
 
 struct RegressionModel
 {
-    double a;
-    double b;
-    Eigen::Vector2d X;
-    Eigen::Vector2d Y;
+    QPointF p1;
+    QPointF p2;
+
+    void setCoords(double x1, double y1, double x2, double y2) {
+        p1.setX(x1);
+        p1.setY(y1);
+        p2.setX(x2);
+        p2.setY(y2);
+    }
 };
 
 class PCADataModel
@@ -23,20 +29,21 @@ public:
     inline const Eigen::MatrixXd &centeredData() const { return m_centeredData; }
     inline const Eigen::MatrixXd &reducedData()  const { return m_reducedData; }
 
-    inline const Eigen::Matrix4d &initialRegression() const { return m_initialRegression; }
-    inline const Eigen::Matrix4d &pcaRegression()     const { return m_pcaRegression; }
+    inline const RegressionModel &initialRegression() const { return m_initialRegression; }
+    inline const RegressionModel &pcaRegression()     const { return m_pcaRegression; }
 
     void computeCenteredData();
     void computeReducedData(int componentsCount);
     void computeInitialRegression();
+    void computePCARegression();
 
 private:
     Eigen::MatrixXd m_initialData{};
     Eigen::MatrixXd m_centeredData{};
     Eigen::MatrixXd m_reducedData{};
 
-    Eigen::Matrix4d m_initialRegression{};
-    Eigen::Matrix4d m_pcaRegression{};
+    RegressionModel m_initialRegression{};
+    RegressionModel m_pcaRegression{};
 };
 
 #endif // PCADATAMODEL_H

@@ -115,9 +115,9 @@ Eigen::MatrixXd performPCA(const Eigen::MatrixXd &data,
     return reducedData;
 }
 
-Eigen::VectorXd linearRegression(const Eigen::VectorXd& X, const Eigen::VectorXd& y) {
-    Eigen::MatrixXd XwithOnes(X.rows(), X.cols() + 1);
-    XwithOnes << X, Eigen::VectorXd::Ones(X.rows());
+Eigen::VectorXd linearRegression(const Eigen::VectorXd& x, const Eigen::VectorXd& y) {
+    Eigen::MatrixXd XwithOnes(x.rows(), x.cols() + 1);
+    XwithOnes << x, Eigen::VectorXd::Ones(x.rows());
     return (XwithOnes.transpose() * XwithOnes).ldlt().solve(XwithOnes.transpose() * y);
 }
 
