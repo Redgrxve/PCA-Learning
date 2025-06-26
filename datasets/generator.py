@@ -7,7 +7,7 @@ high = 10.0
 noise_level = 0.5       # обычный разброс
 y_noise_level = 5.0   
 
-# Генерация 5 файлов
+#разброс по диагонали
 for i in range(1, 3):
     base_values = np.random.uniform(low, high, size=(100, 1))
     data = np.repeat(base_values, 5, axis=1)
@@ -19,10 +19,10 @@ for i in range(1, 3):
     data += noise
 
     df = pd.DataFrame(data)
-    df.to_csv(f"random_dataset_{i}.csv", index=False, header=False)
+    df.to_csv(f"datasets/random_dataset_{i}.csv", index=False, header=False)
 
-# Генерация 5 файлов
+#обычный разброс
 for i in range(4, 7):
     data = np.random.uniform(low, high, size=(100, 5))  # 100 строк, 5 признаков
     df = pd.DataFrame(data)
-    df.to_csv(f"random_dataset_{i}.csv", index=False, header=False)
+    df.to_csv(f"datasets/random_dataset_{i}.csv", index=False, header=False)
