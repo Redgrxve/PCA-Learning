@@ -22,10 +22,8 @@ public:
     ~ChartWidget();
 
     void setModel(PCADataModel *model);
-    void setupSeries();
 
     void showInitialData(bool show = true);
-    void showCenteredData(bool show = true);
     void showReducedData(bool show = true);
     void showInitialRegression(bool show = true);
     void showPCARegression(bool show = true);
@@ -35,8 +33,6 @@ private:
     PCADataModel *m_model{};
 
     void setSliderValue(int value);
-    void fillScatterSeries(QScatterSeries *series, const Eigen::MatrixXd &matrix);
-    void fillRegressionSeries(QLineSeries *series, const RegressionModel &regModel);
 
 private slots:
     void onSliderMoved(int pos);

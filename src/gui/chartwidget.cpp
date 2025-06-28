@@ -26,15 +26,13 @@ ChartWidget::ChartWidget(QWidget *parent)
     connect(ui->zoomSlider, &QSlider::sliderMoved, this, &ChartWidget::onSliderMoved);
 
     connect(ui->initialDataCheckBox, &QCheckBox::clicked,
-            this, [this](bool checked){ showInitialData(checked); });
-    connect(ui->centeredDataCheckBox, &QCheckBox::clicked,
-            this, [this](bool checked){ showCenteredData(checked); });
+            this, &ChartWidget::showInitialData);
     connect(ui->reducedDataCheckBox, &QCheckBox::clicked,
-            this, [this](bool checked){ showReducedData(checked); });
+            this, &ChartWidget::showReducedData);
     connect(ui->initialRegressionCheckBox, &QCheckBox::clicked,
-            this, [this](bool checked){ showInitialRegression(checked); });
+            this, &ChartWidget::showInitialRegression);
     connect(ui->pcaRegressionCheckBox, &QCheckBox::clicked,
-            this, [this](bool checked){ showPCARegression(checked); });
+            this, &ChartWidget::showPCARegression);
 
     connect(ui->performPCAButton, &QPushButton::clicked,
             this, &ChartWidget::onPerformPCAClicked);
@@ -49,67 +47,32 @@ void ChartWidget::setModel(PCADataModel *model)
 {
     m_model = model;
 
-    setupSeries();
+    ui->chartView->setModel(model);
+    ui->chartView->setProjectionAxes(0, 1);
 
-    const auto &initialData = model->initialData();
-    const int rows = static_cast<int>(initialData.rows());
-    const int cols = static_cast<int>(initialData.cols());
-    ui->componentsSpinBox->setMaximum(std::min(rows - 1, cols));
+    const double minX = model->initialData().col(0).minCoeff();
+    const double maxX = model->initialData().col(0).maxCoeff();
+    const double minY = model->initialData().col(1).minCoeff();
+    const double maxY = model->initialData().col(1).maxCoeff();
+    ui->chartView->setAxesRange(minX, maxX, minY, maxY);
 
     showInitialData(true);
-    showCenteredData(false);
     showInitialRegression(true);
-}
-
-void ChartWidget::setupSeries()
-{
-    if (!m_model) return;
-
-    PCAChart *pcaChart = ui->chartView->pcaChart();
-    pcaChart->clearAllDataSeries();
-
-    auto initialDataSeries = new QScatterSeries(pcaChart);
-    auto centeredDataSeries = new QScatterSeries(pcaChart);
-    auto initialRegressionSeries = new QLineSeries(pcaChart);
-
-    const auto &initialData = m_model->initialData();
-    const auto &centeredData = m_model->centeredData();
-    const auto &initialRegression = m_model->initialRegression();
-
-    fillScatterSeries(initialDataSeries, initialData);
-    fillScatterSeries(centeredDataSeries, centeredData);
-    fillRegressionSeries(initialRegressionSeries, initialRegression);
-
-    pcaChart->setInitialDataSeries(initialDataSeries);
-    pcaChart->setCenteredDataSeries(centeredDataSeries);
-    pcaChart->setInitialRegressionSeries(initialRegressionSeries);
-
-    double maxX = initialData.col(0).maxCoeff();
-    double maxY = initialData.col(1).maxCoeff();
-    pcaChart->setAxisRange(0.0, maxX, 0.0, maxY);
 }
 
 void ChartWidget::showInitialData(bool show)
 {
     if (!m_model) return;
 
-    ui->chartView->pcaChart()->showDataSeries(show);
+    ui->chartView->showInitialData(show);
     ui->initialDataCheckBox->setChecked(show);
-}
-
-void ChartWidget::showCenteredData(bool show)
-{
-    if (!m_model) return;
-
-    ui->chartView->pcaChart()->showCenteredDataSeries(show);
-    ui->centeredDataCheckBox->setChecked(show);
 }
 
 void ChartWidget::showReducedData(bool show)
 {
     if (!m_model) return;
 
-    ui->chartView->pcaChart()->showReducedDataSeries(show);
+    ui->chartView->showReducedData(show);
     ui->reducedDataCheckBox->setChecked(show);
 }
 
@@ -117,7 +80,7 @@ void ChartWidget::showInitialRegression(bool show)
 {
     if (!m_model) return;
 
-    ui->chartView->pcaChart()->showInitialRegression(show);
+    ui->chartView->showInitialRegression(show);
     ui->initialRegressionCheckBox->setChecked(show);
 }
 
@@ -125,7 +88,7 @@ void ChartWidget::showPCARegression(bool show)
 {
     if (!m_model) return;
 
-    ui->chartView->pcaChart()->showPCARegression(show);
+    ui->chartView->showPCARegression(show);
     ui->pcaRegressionCheckBox->setChecked(show);
 }
 
@@ -133,34 +96,6 @@ void ChartWidget::setSliderValue(int value)
 {
     ui->zoomSlider->setValue(value);
     ui->zoomPercentLabel->setText(QString::number(value) + "%");
-}
-
-void ChartWidget::fillScatterSeries(QScatterSeries *series, const Eigen::MatrixXd &matrix)
-{
-    series->clear();
-
-    if (matrix.rows() == 0) {
-        qWarning() << "Matrix is empty";
-        return;
-    }
-
-    if (matrix.cols() == 1) {
-        for (int i = 0; i < matrix.rows(); ++i)
-            series->append(matrix(i, 0), 0.0);
-    } else if (matrix.cols() >= 2) {
-        for (int i = 0; i < matrix.rows(); ++i)
-            series->append(matrix(i, 0), matrix(i, 1));
-    } else {
-        qWarning() << "Unsupported matrix shape: " << matrix.rows() << "x" << matrix.cols();
-    }
-}
-
-void ChartWidget::fillRegressionSeries(QLineSeries *series, const RegressionModel &regModel)
-{
-    series->clear();
-
-    series->append(regModel.p1);
-    series->append(regModel.p2);
 }
 
 void ChartWidget::onSliderMoved(int pos)
@@ -173,22 +108,8 @@ void ChartWidget::onPerformPCAClicked()
 {
     if (!m_model) return;
 
-    PCAChart *pcaChart = ui->chartView->pcaChart();
-    pcaChart->removePCASeries();
-
-    auto reducedDataSeries = new QScatterSeries(pcaChart);
-    auto pcaRegressionSeries = new QLineSeries(pcaChart);
-
-    m_model->computeReducedData(ui->componentsSpinBox->value());
-
-    const auto &reducedData = m_model->reducedData();
-    const auto &pcaRegression = m_model->pcaRegression();
-
-    fillScatterSeries(reducedDataSeries, reducedData);
-    fillRegressionSeries(pcaRegressionSeries, pcaRegression);
-
-    pcaChart->setReducedDataSeries(reducedDataSeries);
-    pcaChart->setPCARegressionSeries(pcaRegressionSeries);
+    m_model->computеPCA(ui->componentsSpinBox->value());
+    ui->chartView->setupPCADataSeries();
 
     showReducedData();
     showPCARegression();

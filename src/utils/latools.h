@@ -40,7 +40,6 @@ std::pair<double, Eigen::VectorXd> powerIteration(const Eigen::MatrixXd &a)
 }
 
 
-
 Eigen::MatrixXd meanSubtraction(const Eigen::MatrixXd &data) {
     std::vector<double> avg(data.cols());
     Eigen::MatrixXd result = data;

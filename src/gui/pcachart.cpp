@@ -27,20 +27,13 @@ PCAChart::PCAChart(QGraphicsItem *parent)
     yAxisLine->attachAxis(axisX);
     yAxisLine->attachAxis(axisY);
 
-    //legend()->hide();
+    showAxesLines(false);
 }
 
 void PCAChart::setInitialDataSeries(QScatterSeries *series)
 {
     m_initialDataSeries = series;
     m_initialDataSeries->setName(tr("Исходные данные"));
-    addAndAttachSeries(series);
-}
-
-void PCAChart::setCenteredDataSeries(QScatterSeries *series)
-{
-    m_centeredDataSeries = series;
-    m_centeredDataSeries->setName(tr("Центрированные данные"));
     addAndAttachSeries(series);
 }
 
@@ -51,27 +44,31 @@ void PCAChart::setReducedDataSeries(QScatterSeries *series)
     addAndAttachSeries(series);
 }
 
-void PCAChart::removeInitialDataSeries()
+void PCAChart::clearInitialDataSeries()
 {
     if (!m_initialDataSeries) return;
 
     deleteSeries(m_initialDataSeries);
 }
 
-void PCAChart::removeReducedDataSeries()
+void PCAChart::clearReducedDataSeries()
 {
     if (!m_reducedDataSeries) return;
 
     deleteSeries(m_reducedDataSeries);
 }
 
-
-void PCAChart::removePCASeries()
+void PCAChart::clearPCADataSeries()
 {
-    removeReducedDataSeries();
+    clearReducedDataSeries();
 
     if (m_pcaRegressionSeries)
         deleteSeries(m_pcaRegressionSeries);
+}
+
+void PCAChart::adjustAxesRange()
+{
+
 }
 
 void PCAChart::addAndAttachSeries(QAbstractSeries *series)
@@ -147,7 +144,7 @@ void PCAChart::setAxesLinesColor(const QColor &color)
     yAxisLine->setPointsVisible(false);
 }
 
-void PCAChart::showDataSeries(bool show)
+void PCAChart::showInitialDataSeries(bool show)
 {
     if (!m_initialDataSeries) return;
 
@@ -155,16 +152,6 @@ void PCAChart::showDataSeries(bool show)
         m_initialDataSeries->show();
     else
         m_initialDataSeries->hide();
-}
-
-void PCAChart::showCenteredDataSeries(bool show)
-{
-    if (!m_centeredDataSeries) return;
-
-    if (show)
-        m_centeredDataSeries->show();
-    else
-        m_centeredDataSeries->hide();
 }
 
 void PCAChart::showReducedDataSeries(bool show)
@@ -197,13 +184,24 @@ void PCAChart::showPCARegression(bool show)
         m_pcaRegressionSeries->hide();
 }
 
+void PCAChart::showAxesLines(bool show)
+{
+    if (!xAxisLine ||
+        !yAxisLine) return;
+
+    if (show) {
+        xAxisLine->show();
+        yAxisLine->show();
+    } else {
+        xAxisLine->hide();
+        yAxisLine->hide();
+    }
+}
+
 void PCAChart::clearAllDataSeries()
 {
     if (m_initialDataSeries)
         deleteSeries(m_initialDataSeries);
-
-    if (m_centeredDataSeries)
-        deleteSeries(m_centeredDataSeries);
 
     if (m_reducedDataSeries)
         deleteSeries(m_reducedDataSeries);

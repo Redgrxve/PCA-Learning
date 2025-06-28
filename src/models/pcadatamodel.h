@@ -26,20 +26,18 @@ public:
     void setInitialData(const Eigen::MatrixXd &data);
 
     inline const Eigen::MatrixXd &initialData()  const { return m_initialData; }
-    inline const Eigen::MatrixXd &centeredData() const { return m_centeredData; }
     inline const Eigen::MatrixXd &reducedData()  const { return m_reducedData; }
 
     inline const RegressionModel &initialRegression() const { return m_initialRegression; }
     inline const RegressionModel &pcaRegression()     const { return m_pcaRegression; }
 
-    void computeCenteredData();
-    void computeReducedData(int componentsCount);
+    void computеPCA(int componentsCount);
+
     void computeInitialRegression();
     void computePCARegression();
 
 private:
     Eigen::MatrixXd m_initialData{};
-    Eigen::MatrixXd m_centeredData{};
     Eigen::MatrixXd m_reducedData{};
 
     RegressionModel m_initialRegression{};

@@ -1,6 +1,9 @@
 import numpy as np
 import pandas as pd
+import os
 
+# Создаём папку datasets, если её нет
+os.makedirs("datasets", exist_ok=True)
 
 low = -10.0
 high = 10.0

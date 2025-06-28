@@ -4,19 +4,17 @@
 PCADataModel::PCADataModel(const Eigen::MatrixXd &data)
     : m_initialData(data)
 {
-    m_centeredData = LATools::meanSubtraction(data);
     computeInitialRegression();
 }
 
 void PCADataModel::setInitialData(const Eigen::MatrixXd &data) {
     m_initialData = data;
-    m_centeredData = LATools::meanSubtraction(data);
     computeInitialRegression();
 }
 
-void PCADataModel::computeReducedData(int componentsCount)
+void PCADataModel::computеPCA(int componentsCount)
 {
-    m_reducedData = LATools::performPCA(m_centeredData, true, componentsCount);
+    m_reducedData = LATools::performPCA(m_initialData, false, componentsCount);
     computePCARegression();
 }
 

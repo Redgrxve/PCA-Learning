@@ -15,11 +15,9 @@ public:
     explicit PCAChart(QGraphicsItem *parent = nullptr);
 
     inline QScatterSeries *dataSeries()         const { return m_initialDataSeries; }
-    inline QScatterSeries *centeredDataSeries() const { return m_centeredDataSeries; }
     inline QScatterSeries *reducedDataSeries()  const { return m_reducedDataSeries; }
 
     void setInitialDataSeries(QScatterSeries *series);
-    void setCenteredDataSeries(QScatterSeries *series);
     void setReducedDataSeries(QScatterSeries *series);
 
     void setInitialRegressionSeries(QLineSeries *series);
@@ -28,16 +26,19 @@ public:
     void setAxisRange(qreal minX, qreal maxX, qreal minY, qreal maxY);
     void setAxesLinesColor(const QColor &color);
 
-    void showDataSeries(bool show = true);
-    void showCenteredDataSeries(bool show = true);
+    void showInitialDataSeries(bool show = true);
     void showReducedDataSeries(bool show = true);
     void showInitialRegression(bool show = true);
     void showPCARegression(bool show = true);
 
+    void showAxesLines(bool show = true);
+
     void clearAllDataSeries();
-    void removeInitialDataSeries();
-    void removeReducedDataSeries();
-    void removePCASeries();
+    void clearInitialDataSeries();
+    void clearReducedDataSeries();
+    void clearPCADataSeries();
+
+    void adjustAxesRange();
 
 private:
     template<typename T>
@@ -53,16 +54,15 @@ private:
 
     QLineSeries *xAxisLine{};
     QLineSeries *yAxisLine{};
+
     QValueAxis *axisX{};
     QValueAxis *axisY{};
 
     QScatterSeries *m_initialDataSeries{};
-    QScatterSeries *m_centeredDataSeries{};
     QScatterSeries *m_reducedDataSeries{};
 
     QLineSeries *m_initialRegressionSeries{};
     QLineSeries *m_pcaRegressionSeries{};
-
 
     QColor m_axesLinesColor = Qt::black;
     int  m_axesLinesWith = 1;

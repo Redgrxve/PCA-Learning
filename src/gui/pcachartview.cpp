@@ -1,15 +1,132 @@
 #include "pcachartview.h"
 #include "pcachart.h"
+#include "pcadatamodel.h"
+
+#include <QScatterSeries>
+#include <QLineSeries>
 
 PCAChartView::PCAChartView(QWidget *parent)
     : CustomChartView(parent)
 {
     m_chart = new PCAChart;
-    m_chart->setAxisRange(0, 10.0, 0, 10.0);
     setChart(m_chart);
+
+    //
 }
 
 PCAChartView::~PCAChartView()
 {
     delete m_chart;
+}
+
+void PCAChartView::setModel(PCADataModel *model)
+{
+    m_model = model;
+
+    setupInitialDataSeries();
+    m_chart->adjustAxesRange();
+}
+
+void PCAChartView::setProjectionAxes(int xIndex, int yIndex)
+{
+    m_xIndex = xIndex;
+    m_yIndex = yIndex;
+}
+
+void PCAChartView::showInitialData(bool show)
+{
+    if (!m_model) return;
+
+    m_chart->showInitialDataSeries(show);
+}
+
+void PCAChartView::showReducedData(bool show)
+{
+    if (!m_model) return;
+
+    m_chart->showReducedDataSeries(show);
+}
+
+void PCAChartView::showInitialRegression(bool show)
+{
+    if (!m_model) return;
+
+    m_chart->showInitialRegression(show);
+}
+
+void PCAChartView::showPCARegression(bool show)
+{
+    if (!m_model) return;
+
+    m_chart->showPCARegression(show);
+}
+
+void PCAChartView::setAxesRange(double minX, double maxX, double minY, double maxY)
+{
+    m_chart->setAxisRange(minX, maxX, minY, maxY);
+}
+
+void PCAChartView::setupInitialDataSeries()
+{
+    if (!m_model) return;
+
+    m_chart->clearAllDataSeries();
+
+    auto initialDataSeries = new QScatterSeries(m_chart);
+    auto initialRegressionSeries = new QLineSeries(m_chart);
+
+    const auto &initialData = m_model->initialData();
+    const auto &initialRegression = m_model->initialRegression();
+
+    fillDataSeries(initialDataSeries, initialData);
+    fillRegressionSeries(initialRegressionSeries, initialRegression);
+
+    m_chart->setInitialDataSeries(initialDataSeries);
+    m_chart->setInitialRegressionSeries(initialRegressionSeries);
+}
+
+void PCAChartView::setupPCADataSeries()
+{
+    if (!m_model) return;
+
+    m_chart->clearPCADataSeries();
+
+    auto reducedDataSeries = new QScatterSeries(m_chart);
+    auto pcaRegressionSeries = new QLineSeries(m_chart);
+
+    const auto &reducedData = m_model->reducedData();
+    const auto &pcaRegression = m_model->pcaRegression();
+
+    fillDataSeries(reducedDataSeries, reducedData);
+    fillRegressionSeries(pcaRegressionSeries, pcaRegression);
+
+    m_chart->setReducedDataSeries(reducedDataSeries);
+    m_chart->setPCARegressionSeries(pcaRegressionSeries);
+}
+
+void PCAChartView::fillDataSeries(QScatterSeries *series, const Eigen::MatrixXd &matrix)
+{
+    series->clear();
+
+    if (matrix.rows() == 0) {
+        qWarning() << "Matrix is empty";
+        return;
+    }
+
+    if (m_xIndex >= matrix.cols() ||
+        m_yIndex >= matrix.cols()) {
+        qWarning() << "X and Y indexes out of bounds";
+        return;
+    }
+
+    for (int i = 0; i < matrix.rows(); ++i)
+        series->append(matrix(i, m_xIndex), matrix(i, m_yIndex));
+}
+
+void PCAChartView::fillRegressionSeries(QLineSeries *series, const RegressionModel &regModel)
+{
+    series->clear();
+
+    series->append(regModel.p1);
+    series->append(regModel.p2);
 }

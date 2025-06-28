@@ -18,33 +18,6 @@
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
       <layout class="QGridLayout" name="gridLayout">
-       <item row="1" column="0">
-        <widget class="QCheckBox" name="centeredDataCheckBox">
-         <property name="minimumSize">
-          <size>
-           <width>76</width>
-           <height>21</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Центрированные данные</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QCheckBox" name="eigVectorsCheckBox">
-         <property name="text">
-          <string>Собственные векторы</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QCheckBox" name="reducedDataCheckBox">
-         <property name="text">
-          <string>Проекция после PCA</string>
-         </property>
-        </widget>
-       </item>
        <item row="0" column="0">
         <widget class="QCheckBox" name="initialDataCheckBox">
          <property name="minimumSize">
@@ -72,6 +45,13 @@
         <widget class="QCheckBox" name="pcaRegressionCheckBox">
          <property name="text">
           <string>Регрессия после PCA</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QCheckBox" name="reducedDataCheckBox">
+         <property name="text">
+          <string>Проекция после PCA</string>
          </property>
         </widget>
        </item>
