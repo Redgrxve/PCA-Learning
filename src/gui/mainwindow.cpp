@@ -48,7 +48,7 @@ void MainWindow::onImportTriggered()
     QString filePath = QFileDialog::getOpenFileName(this, "Open Matrix File", "");
     if (filePath.isEmpty()) return;
 
-    Eigen::MatrixXd matrix = loadMatrixFromFile(filePath);
+    Eigen::MatrixXd matrix = Utils::loadMatrixFromFile(filePath);
     if (matrix.size() == 0) {
         QMessageBox::warning(this, "Error", "Failed to load matrix from file.");
         return;

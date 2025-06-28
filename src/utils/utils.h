@@ -10,6 +10,8 @@
 #include <QDebug>
 #include <qregularexpression.h>
 
+namespace Utils {
+
 Eigen::MatrixXd loadMatrixFromFile(const QString &filePath)
 {
     QFile file(filePath);
@@ -54,6 +56,8 @@ Eigen::MatrixXd loadMatrixFromFile(const QString &filePath)
             result(i, j) = rows[i][j];
 
     return result;
+}
+
 }
 
 
