@@ -22,15 +22,36 @@ PCAChartView::~PCAChartView()
 void PCAChartView::setModel(PCADataModel *model)
 {
     m_model = model;
-
-    setupInitialDataSeries();
-    m_chart->adjustAxesRange();
 }
 
 void PCAChartView::setProjectionAxes(int xIndex, int yIndex)
 {
     m_xIndex = xIndex;
     m_yIndex = yIndex;
+}
+
+void PCAChartView::setupSeries()
+{
+    if (!m_model) return;
+
+    m_chart->clearAllDataSeries();
+
+    auto dataSeries       = new QScatterSeries(m_chart);
+    auto regressionSeries = new QLineSeries(m_chart);
+
+    const auto &data       = m_usePCA ? m_model->reducedData()   : m_model->initialData();
+    const auto &regression = m_usePCA ? m_model->pcaRegression() : m_model->initialRegression();
+
+    fillDataSeries(dataSeries, data);
+    fillRegressionSeries(regressionSeries, regression);
+
+    if (m_usePCA) {
+        m_chart->setReducedDataSeries(dataSeries);
+        m_chart->setPCARegressionSeries(regressionSeries);
+    } else {
+        m_chart->setInitialDataSeries(dataSeries);
+        m_chart->setInitialRegressionSeries(regressionSeries);
+    }
 }
 
 void PCAChartView::showInitialData(bool show)
@@ -73,6 +94,16 @@ void PCAChartView::setAxesRange(double minX, double maxX, double minY, double ma
     minY *= m_scaleFactor;
     maxY *= m_scaleFactor;
     m_chart->setAxisRange(minX, maxX, minY, maxY);
+}
+
+void PCAChartView::adjustAxesRange()
+{
+    const auto &data  = m_usePCA ? m_model->reducedData() : m_model->initialData();
+    const double minX = data.col(m_xIndex).minCoeff();
+    const double maxX = data.col(m_xIndex).maxCoeff();
+    const double minY = data.col(m_yIndex).minCoeff();
+    const double maxY = data.col(m_yIndex).maxCoeff();
+    setAxesRange(minX, maxX, minY, maxY);
 }
 
 void PCAChartView::setupInitialDataSeries()

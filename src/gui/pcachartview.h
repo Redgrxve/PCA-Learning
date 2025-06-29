@@ -21,6 +21,9 @@ public:
     void setModel(PCADataModel *model);
     void setProjectionAxes(int xIndex, int yIndex);
 
+    inline void setUsePCA(bool usePCA) { m_usePCA = usePCA; }
+
+    void setupSeries();
     void setupInitialDataSeries();
     void setupPCADataSeries();
 
@@ -32,6 +35,7 @@ public:
     void clearPCASeries();
 
     void setAxesRange(double minX, double maxX, double minY, double maxY);
+    void adjustAxesRange();
 
 private:
     void fillDataSeries(QScatterSeries *series, const Eigen::MatrixXd &matrix);
@@ -39,6 +43,8 @@ private:
 
     PCAChart     *m_chart{};
     PCADataModel *m_model{};
+
+    bool m_usePCA = false;
 
     int m_xIndex = 0;
     int m_yIndex = 1;

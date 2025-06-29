@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <Eigen/Dense>
+#include <QStack>
 
 namespace Ui {
 class ChartWidget;
@@ -30,13 +31,22 @@ public:
     void showPCARegression(bool show = true);
 
 private:
-    Ui::ChartWidget *ui;
-    PCADataModel *m_model{};
+    void setupRawTabs();
+    void setupPCATabs();
+    void setupProjectionTabs();
+
+    void connectViewSlots(PCAChartView *view);
 
     void setSliderValue(int value);
     PCAChartView *currentChartView();
 
+    Ui::ChartWidget *ui;
+    PCADataModel *m_model{};
+    std::vector<PCAChartView*> m_views;
+
 private slots:
+    void onZoomInClicked();
+    void onZoomOutClicked();
     void onSliderMoved(int pos);
     void onPerformPCAClicked();
 };

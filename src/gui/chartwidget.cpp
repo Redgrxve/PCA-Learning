@@ -28,6 +28,9 @@ ChartWidget::ChartWidget(QWidget *parent)
     connect(ui->pcaRegressionCheckBox, &QCheckBox::clicked,
             this, &ChartWidget::showPCARegression);
 
+    connect(ui->inButton,  &QPushButton::clicked, this, &ChartWidget::onZoomInClicked);
+    connect(ui->outButton, &QPushButton::clicked, this, &ChartWidget::onZoomOutClicked);
+
     connect(ui->performPCAButton, &QPushButton::clicked,
             this, &ChartWidget::onPerformPCAClicked);
 }
@@ -43,29 +46,11 @@ void ChartWidget::setModel(PCADataModel *model)
 
     ui->tabWidget->clear();
 
-    const auto &initialData = model->initialData();
-    for (qsizetype col = 1; col < initialData.cols(); ++col) {
-        auto *view = new PCAChartView(ui->tabWidget);
-        view->setModel(model);
-        view->setProjectionAxes(0, col);
+    setupProjectionTabs();
 
-        const double minX = initialData.col(0).minCoeff();
-        const double maxX = initialData.col(0).maxCoeff();
-        const double minY = initialData.col(col).minCoeff();
-        const double maxY = initialData.col(col).maxCoeff();
-        view->setAxesRange(minX, maxX, minY, maxY);
-
-        connect(ui->inButton,  &QPushButton::clicked, view, &CustomChartView::zoomIn);
-        connect(ui->outButton, &QPushButton::clicked, view, &CustomChartView::zoomOut);
-        connect(view, &CustomChartView::zoomChanged, this, [this](float value) {
-            setSliderValue(static_cast<int>(value * 100.f));
-        });
-
-        ui->tabWidget->addTab(view, QString("x1 - x%1").arg(col + 1));
-    }
-
-    showInitialData(true);
-    showInitialRegression(true);
+    const int rows = static_cast<int>(m_model->initialData().rows());
+    const int cols = static_cast<int>(m_model->initialData().cols());
+    ui->componentsSpinBox->setMaximum(std::min(rows - 1, cols));
 }
 
 void ChartWidget::showInitialData(bool show)
@@ -100,15 +85,63 @@ void ChartWidget::showPCARegression(bool show)
     ui->pcaRegressionCheckBox->setChecked(show);
 }
 
-void ChartWidget::setSliderValue(int value)
+void ChartWidget::setupRawTabs()
 {
-    ui->zoomSlider->setValue(value);
-    ui->zoomPercentLabel->setText(QString::number(value) + "%");
+    if (!m_model) return;
+
+    const qsizetype cols = m_model->initialData().cols();
+    for (qsizetype col = 1; col < cols; ++col) {
+        auto *view = new PCAChartView(ui->tabWidget);
+        view->setModel(m_model);
+        view->setProjectionAxes(0, col);
+        view->setUsePCA(false);
+        view->setupSeries();
+        view->adjustAxesRange();
+
+        connectViewSlots(view);
+
+        ui->tabWidget->addTab(view, QString("Raw: x1 - x%1").arg(col + 1));
+        m_views.push_back(view);
+    }
 }
 
-PCAChartView *ChartWidget::currentChartView()
+void ChartWidget::setupPCATabs()
 {
-    return static_cast<PCAChartView*>(ui->tabWidget->currentWidget());
+    if (!m_model) return;
+    if (m_model->reducedData().cols() < 2) return;
+
+    const qsizetype cols = m_model->reducedData().cols();
+    for (qsizetype col = 1; col < cols; ++col) {
+        auto *view = new PCAChartView(ui->tabWidget);
+        view->setModel(m_model);
+        view->setProjectionAxes(0, col);
+        view->setUsePCA(true);
+        view->setupSeries();
+        view->adjustAxesRange();
+
+        connectViewSlots(view);
+
+        ui->tabWidget->addTab(view, QString("PCA: PC1 - PC%1").arg(col + 1));
+        m_views.push_back(view);
+    }
+}
+
+void ChartWidget::setupProjectionTabs()
+{
+    if (!m_model) return;
+
+    ui->tabWidget->clear();
+    m_views.clear();
+
+    setupRawTabs();
+    setupPCATabs();
+}
+
+void ChartWidget::connectViewSlots(PCAChartView *view)
+{
+    connect(view, &PCAChartView::zoomChanged, this, [this](float value) {
+        setSliderValue(static_cast<int>(value * 100.f));
+    });
 }
 
 void ChartWidget::onSliderMoved(int pos)
@@ -121,18 +154,36 @@ void ChartWidget::onPerformPCAClicked()
 {
     if (!m_model) return;
 
-    currentChartView()->clearPCASeries();
-
     m_model->computеPCA(ui->componentsSpinBox->value());
+    setupProjectionTabs();
 
-    const auto &reducedData = m_model->reducedData();
-    for (qsizetype col = 0; col < reducedData.cols(); ++col) {
-        auto *view = static_cast<PCAChartView*>(ui->tabWidget->widget(col));
-        view->setupPCADataSeries();
-    }
+    // showReducedData();
+    // showPCARegression();
+    // showInitialData(false);
+    // showInitialRegression(false);
+}
 
-    showReducedData();
-    showPCARegression();
-    showInitialData(false);
-    showInitialRegression(false);
+void ChartWidget::setSliderValue(int value)
+{
+    ui->zoomSlider->setValue(value);
+    ui->zoomPercentLabel->setText(QString::number(value) + "%");
+}
+
+PCAChartView *ChartWidget::currentChartView()
+{
+    return static_cast<PCAChartView*>(ui->tabWidget->currentWidget());
+}
+
+void ChartWidget::onZoomInClicked()
+{
+    if (!currentChartView()) return;
+
+    currentChartView()->zoomIn();
+}
+
+void ChartWidget::onZoomOutClicked()
+{
+    if (!currentChartView()) return;
+
+    currentChartView()->zoomOut();
 }
