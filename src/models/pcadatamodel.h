@@ -6,16 +6,10 @@
 
 struct RegressionModel
 {
-    QPointF p1;
-    QPointF p2;
-
-    void setCoords(double x1, double y1, double x2, double y2) {
-        p1.setX(x1);
-        p1.setY(y1);
-        p2.setX(x2);
-        p2.setY(y2);
-    }
+    Eigen::MatrixXd x;
+    Eigen::VectorXd y;
 };
+
 
 class PCADataModel
 {
@@ -39,6 +33,9 @@ public:
 private:
     Eigen::MatrixXd m_initialData{};
     Eigen::MatrixXd m_reducedData{};
+
+    Eigen::VectorXd m_inititalPredition;
+    Eigen::VectorXd m_pcaPrediction;
 
     RegressionModel m_initialRegression{};
     RegressionModel m_pcaRegression{};

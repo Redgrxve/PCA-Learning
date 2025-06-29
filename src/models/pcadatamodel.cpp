@@ -20,42 +20,30 @@ void PCADataModel::computеPCA(int componentsCount)
 
 void PCADataModel::computeInitialRegression()
 {
-    Eigen::VectorXd x = m_initialData.col(0);
-    Eigen::VectorXd y = m_initialData.col(1);
-    Eigen::VectorXd coeffs = LATools::linearRegression(x, y);
+    Eigen::MatrixXd X = m_initialData.leftCols(m_initialData.cols() - 1);
+    Eigen::MatrixXd Xb(X.rows(), X.cols() + 1);
+    Xb << Eigen::VectorXd::Ones(X.rows()), X;
 
-    double a = coeffs(0);
-    double b = coeffs(1);
+    Eigen::VectorXd y = m_initialData.rightCols(1);
+    Eigen::VectorXd a = LATools::linearRegression(Xb, y);
 
-    double minX = x.minCoeff();
-    double maxX = x.maxCoeff();
+    Eigen::VectorXd yPred = Xb * a;
 
-    double y1 = a * minX + b;
-    double y2 = a * maxX + b;
-
-    m_initialRegression.setCoords(minX, y1, maxX, y2);
+    m_initialRegression.x = X;
+    m_initialRegression.y = yPred;
 }
 
 void PCADataModel::computePCARegression()
 {
-    Eigen::VectorXd x = m_reducedData.col(0);
-    Eigen::VectorXd y;
+    Eigen::MatrixXd X = m_reducedData.leftCols(m_reducedData.cols() - 1);
+    Eigen::MatrixXd Xb(X.rows(), X.cols() + 1);
+    Xb << Eigen::VectorXd::Ones(X.rows()), X;
 
-    if (m_reducedData.cols() == 1)
-        y = m_initialData.col(1);
-    else
-        y = m_reducedData.col(1);
+    const auto &y = m_reducedData.rightCols(1);
+    Eigen::VectorXd a = LATools::linearRegression(Xb, y);
 
-    Eigen::VectorXd coeffs = LATools::linearRegression(x, y);
+    Eigen::VectorXd yPred = Xb * a;
 
-    double a = coeffs(0);
-    double b = coeffs(1);
-
-    double minX = x.minCoeff();
-    double maxX = x.maxCoeff();
-
-    double y1 = a * minX + b;
-    double y2 = a * maxX + b;
-
-    m_pcaRegression.setCoords(minX, y1, maxX, y2);
+    m_pcaRegression.x = X;
+    m_pcaRegression.y = yPred;
 }

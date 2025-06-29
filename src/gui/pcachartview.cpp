@@ -167,6 +167,15 @@ void PCAChartView::fillRegressionSeries(QLineSeries *series, const RegressionMod
 {
     series->clear();
 
-    series->append(regModel.p1);
-    series->append(regModel.p2);
+    QVector<QPointF> points;
+    points.reserve(regModel.x.rows());
+
+    for (int i = 0; i < regModel.x.rows(); ++i) {
+        points.append(QPointF(regModel.x(i, m_xIndex), regModel.y(i)));
+    }
+
+    std::sort(points.begin(), points.end(),
+              [](const QPointF &a, const QPointF &b) { return a.x() < b.x(); });
+
+    series->append(points);
 }
