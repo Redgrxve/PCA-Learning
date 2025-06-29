@@ -12,6 +12,7 @@ class PCADataModel;
 class QScatterSeries;
 class QLineSeries;
 class RegressionModel;
+class PCAChartView;
 
 class ChartWidget : public QWidget
 {
@@ -33,6 +34,7 @@ private:
     PCADataModel *m_model{};
 
     void setSliderValue(int value);
+    PCAChartView *currentChartView();
 
 private slots:
     void onSliderMoved(int pos);

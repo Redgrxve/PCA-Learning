@@ -61,8 +61,17 @@ void PCAChartView::showPCARegression(bool show)
     m_chart->showPCARegression(show);
 }
 
+void PCAChartView::clearPCASeries()
+{
+    m_chart->clearPCADataSeries();
+}
+
 void PCAChartView::setAxesRange(double minX, double maxX, double minY, double maxY)
 {
+    minX *= m_scaleFactor;
+    maxX *= m_scaleFactor;
+    minY *= m_scaleFactor;
+    maxY *= m_scaleFactor;
     m_chart->setAxisRange(minX, maxX, minY, maxY);
 }
 

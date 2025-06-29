@@ -29,6 +29,8 @@ public:
     void showInitialRegression(bool show = true);
     void showPCARegression(bool show = true);
 
+    void clearPCASeries();
+
     void setAxesRange(double minX, double maxX, double minY, double maxY);
 
 private:
@@ -40,6 +42,8 @@ private:
 
     int m_xIndex = 0;
     int m_yIndex = 1;
+
+    float m_scaleFactor = 1.2f;
 };
 
 #endif // PCACHARTVIEW_H
