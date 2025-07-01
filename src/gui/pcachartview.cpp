@@ -28,6 +28,12 @@ void PCAChartView::setProjectionAxes(int xIndex, int yIndex)
 {
     m_xIndex = xIndex;
     m_yIndex = yIndex;
+
+    if (!m_usePCA) {
+        const auto titles = m_model->featuresNames();
+        if (!titles.empty())
+            m_chart->setAxesTitles(titles[xIndex], titles[yIndex]);
+    }
 }
 
 void PCAChartView::setupSeries()
@@ -36,22 +42,15 @@ void PCAChartView::setupSeries()
 
     m_chart->clearAllDataSeries();
 
-    auto dataSeries       = new QScatterSeries(m_chart);
-    auto regressionSeries = new QLineSeries(m_chart);
-
-    const auto &data       = m_usePCA ? m_model->reducedData()   : m_model->initialData();
-    const auto &regression = m_usePCA ? m_model->pcaRegression() : m_model->initialRegression();
+    auto dataSeries = new QScatterSeries(m_chart);
+    const auto &data = m_usePCA ? m_model->reducedData() : m_model->initialData();
 
     fillDataSeries(dataSeries, data);
-    fillRegressionSeries(regressionSeries, regression);
 
-    if (m_usePCA) {
+    if (m_usePCA)
         m_chart->setReducedDataSeries(dataSeries);
-        m_chart->setPCARegressionSeries(regressionSeries);
-    } else {
+    else
         m_chart->setInitialDataSeries(dataSeries);
-        m_chart->setInitialRegressionSeries(regressionSeries);
-    }
 }
 
 void PCAChartView::showInitialData(bool show)
@@ -87,6 +86,11 @@ void PCAChartView::clearPCASeries()
     m_chart->clearPCADataSeries();
 }
 
+void PCAChartView::setAxesTitles(const QString &x, const QString &y)
+{
+    m_chart->setAxesTitles(x, y);
+}
+
 void PCAChartView::setAxesRange(double minX, double maxX, double minY, double maxY)
 {
     minX *= m_scaleFactor;
@@ -113,16 +117,10 @@ void PCAChartView::setupInitialDataSeries()
     m_chart->clearAllDataSeries();
 
     auto initialDataSeries = new QScatterSeries(m_chart);
-    auto initialRegressionSeries = new QLineSeries(m_chart);
-
     const auto &initialData = m_model->initialData();
-    const auto &initialRegression = m_model->initialRegression();
 
     fillDataSeries(initialDataSeries, initialData);
-    fillRegressionSeries(initialRegressionSeries, initialRegression);
-
     m_chart->setInitialDataSeries(initialDataSeries);
-    m_chart->setInitialRegressionSeries(initialRegressionSeries);
 }
 
 void PCAChartView::setupPCADataSeries()
@@ -132,16 +130,10 @@ void PCAChartView::setupPCADataSeries()
     m_chart->clearPCADataSeries();
 
     auto reducedDataSeries = new QScatterSeries(m_chart);
-    auto pcaRegressionSeries = new QLineSeries(m_chart);
-
     const auto &reducedData = m_model->reducedData();
-    const auto &pcaRegression = m_model->pcaRegression();
 
     fillDataSeries(reducedDataSeries, reducedData);
-    fillRegressionSeries(pcaRegressionSeries, pcaRegression);
-
     m_chart->setReducedDataSeries(reducedDataSeries);
-    m_chart->setPCARegressionSeries(pcaRegressionSeries);
 }
 
 void PCAChartView::fillDataSeries(QScatterSeries *series, const Eigen::MatrixXd &matrix)

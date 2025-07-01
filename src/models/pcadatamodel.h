@@ -3,11 +3,14 @@
 
 #include <Eigen/Dense>
 #include <QPoint>
+#include <QStringList>
 
 struct RegressionModel
 {
     Eigen::MatrixXd x;
     Eigen::VectorXd y;
+
+    double mse;
 };
 
 
@@ -15,9 +18,12 @@ class PCADataModel
 {
 public:
     PCADataModel() = default;
-    PCADataModel(const Eigen::MatrixXd &data);
+    PCADataModel(const Eigen::MatrixXd &data, const QStringList &featuresNames);
 
+    void setFeaturesNames(const QStringList &names) { m_featuresNames = names; }
     void setInitialData(const Eigen::MatrixXd &data);
+
+    inline const QStringList &featuresNames()  const { return m_featuresNames; }
 
     inline const Eigen::MatrixXd &initialData()  const { return m_initialData; }
     inline const Eigen::MatrixXd &reducedData()  const { return m_reducedData; }
@@ -31,6 +37,8 @@ public:
     void computePCARegression();
 
 private:
+    QStringList m_featuresNames{};
+
     Eigen::MatrixXd m_initialData{};
     Eigen::MatrixXd m_reducedData{};
 

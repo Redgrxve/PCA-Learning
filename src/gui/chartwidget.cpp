@@ -51,6 +51,9 @@ void ChartWidget::setModel(PCADataModel *model)
     const int rows = static_cast<int>(m_model->initialData().rows());
     const int cols = static_cast<int>(m_model->initialData().cols());
     ui->componentsSpinBox->setMaximum(std::min(rows - 1, cols));
+
+    double mse = m_model->initialRegression().mse;
+    ui->initialMseLabel->setText(tr("MSE до PCA: ") + QString::number(mse));
 }
 
 void ChartWidget::showInitialData(bool show)
@@ -93,8 +96,8 @@ void ChartWidget::setupRawTabs()
     for (qsizetype col = 1; col < cols; ++col) {
         auto *view = new PCAChartView(ui->tabWidget);
         view->setModel(m_model);
-        view->setProjectionAxes(0, col);
         view->setUsePCA(false);
+        view->setProjectionAxes(0, col);
         view->setupSeries();
         view->adjustAxesRange();
 
@@ -114,8 +117,8 @@ void ChartWidget::setupPCATabs()
     for (qsizetype col = 1; col < cols; ++col) {
         auto *view = new PCAChartView(ui->tabWidget);
         view->setModel(m_model);
-        view->setProjectionAxes(0, col);
         view->setUsePCA(true);
+        view->setProjectionAxes(0, col);
         view->setupSeries();
         view->adjustAxesRange();
 
@@ -156,6 +159,9 @@ void ChartWidget::onPerformPCAClicked()
 
     m_model->computеPCA(ui->componentsSpinBox->value());
     setupProjectionTabs();
+
+    double mse = m_model->pcaRegression().mse;
+    ui->pcaMseLabel->setText(tr("MSE после PCA: ") + QString::number(mse));
 
     // showReducedData();
     // showPCARegression();

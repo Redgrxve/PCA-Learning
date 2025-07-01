@@ -112,6 +112,12 @@ void PCAChart::setPCARegressionSeries(QLineSeries *series)
     addAndAttachSeries(m_pcaRegressionSeries);
 }
 
+void PCAChart::setAxesTitles(const QString &x, const QString &y)
+{
+    axisX->setTitleText(x);
+    axisY->setTitleText(y);
+}
+
 void PCAChart::setAxisRange(qreal minX, qreal maxX, qreal minY, qreal maxY)
 {
     axisX->setRange(minX, maxX);

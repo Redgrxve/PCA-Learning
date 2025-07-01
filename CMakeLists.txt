@@ -33,6 +33,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         src/models/pcadatamodel.cpp
         src/utils/utils.h
         src/utils/jacobieigensolver.cpp src/utils/jacobieigensolver.h
+        src/gui/selectheadersdialog.h src/gui/selectheadersdialog.cpp src/gui/selectheadersdialog.ui
 
     )
 # Define target properties for Android with Qt 6 as:

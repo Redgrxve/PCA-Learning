@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "pcadatamodel.h"
 #include "utils.h"
+#include "selectheadersdialog.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -45,18 +46,58 @@ Eigen::MatrixXd MainWindow::generateData()
 
 void MainWindow::onImportTriggered()
 {
+    // QString filePath = QFileDialog::getOpenFileName(this, "Open Matrix File", "../../datasets");
+    // if (filePath.isEmpty()) return;
+
+    // Eigen::MatrixXd data = Utils::readCsvWithHeaders(filePath, {"Temperature (C)", "Apparent Temperature (C)", "Humidity", "Wind Speed (km/h)"});
+    // if (data.size() == 0) {
+    //     QMessageBox::warning(this, "Error", "Failed to load matrix from file.");
+    //     return;
+    // }
+
+    // m_dataModel->setInitialData(data);
+    // m_dataModel->setFeaturesNames({"Temperature (C)", "Apparent Temperature (C)", "Humidity", "Wind Speed (km/h)"});
+    // ui->chartWidget->setModel(m_dataModel);
+
+    // ui->statusbar->showMessage(filePath, 100000);
+
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this,
+                                  tr("Тип файла"),
+                                  tr("Файл с заголовками?"));
+
     QString filePath = QFileDialog::getOpenFileName(this, "Open Matrix File", "../../datasets");
     if (filePath.isEmpty()) return;
 
-    Eigen::MatrixXd matrix = Utils::loadMatrixFromFile(filePath);
-    if (matrix.size() == 0) {
-        QMessageBox::warning(this, "Error", "Failed to load matrix from file.");
-        return;
+    Eigen::MatrixXd data;
+    QStringList selectedFeatures;
+    if (reply == QMessageBox::StandardButton::Yes) {
+        const auto headers = Utils::getCSVHeaders(filePath);
+
+        SelectHeadersDialog dialog(this);
+        dialog.addHeaders(headers);
+
+
+        if (dialog.exec() == QDialog::Accepted) {
+            selectedFeatures = dialog.getSelectedHeaders();
+        };
+
+        data = Utils::readCsvByFeatures(filePath, selectedFeatures);
+        if (data.size() == 0) {
+            QMessageBox::warning(this, "Error", "Failed to load matrix from file.");
+            return;
+        }
+    } else {
+        data = Utils::loadMatrixFromFile(filePath);
+        if (data.size() == 0) {
+            QMessageBox::warning(this, "Error", "Failed to load matrix from file.");
+            return;
+        }
     }
 
-    m_dataModel->setInitialData(matrix);
+    m_dataModel->setInitialData(data);
+    m_dataModel->setFeaturesNames(selectedFeatures);
     ui->chartWidget->setModel(m_dataModel);
-
     ui->statusbar->showMessage(filePath, 100000);
 }
 

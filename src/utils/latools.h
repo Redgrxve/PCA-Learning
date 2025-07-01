@@ -118,6 +118,10 @@ Eigen::VectorXd linearRegression(const Eigen::MatrixXd& Xb, const Eigen::VectorX
     return (Xb.transpose() * Xb).ldlt().solve(Xb.transpose() * y);
 }
 
+double MSE(const Eigen::MatrixXd &y, const Eigen::MatrixXd &yPred) {
+    return (y - yPred).squaredNorm() / y.size();
+}
+
 };
 
 #endif // LATOOLS_H

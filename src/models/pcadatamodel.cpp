@@ -1,8 +1,8 @@
 #include "pcadatamodel.h"
 #include "latools.h"
 
-PCADataModel::PCADataModel(const Eigen::MatrixXd &data)
-    : m_initialData(data)
+PCADataModel::PCADataModel(const Eigen::MatrixXd &data, const QStringList &featuresNames)
+    : m_initialData(data), m_featuresNames(featuresNames)
 {
     computeInitialRegression();
 }
@@ -31,6 +31,7 @@ void PCADataModel::computeInitialRegression()
 
     m_initialRegression.x = X;
     m_initialRegression.y = yPred;
+    m_initialRegression.mse = LATools::MSE(y, yPred);
 }
 
 void PCADataModel::computePCARegression()
@@ -46,4 +47,7 @@ void PCADataModel::computePCARegression()
 
     m_pcaRegression.x = X;
     m_pcaRegression.y = yPred;
+    m_pcaRegression.mse = LATools::MSE(y, yPred);
 }
+
+

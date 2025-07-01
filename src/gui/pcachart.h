@@ -23,6 +23,7 @@ public:
     void setInitialRegressionSeries(QLineSeries *series);
     void setPCARegressionSeries(QLineSeries *series);
 
+    void setAxesTitles(const QString &x, const QString &y);
     void setAxisRange(qreal minX, qreal maxX, qreal minY, qreal maxY);
     void setAxesLinesColor(const QColor &color);
 

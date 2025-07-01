@@ -34,6 +34,7 @@ public:
 
     void clearPCASeries();
 
+    void setAxesTitles(const QString &x, const QString &y);
     void setAxesRange(double minX, double maxX, double minY, double maxY);
     void adjustAxesRange();
 
