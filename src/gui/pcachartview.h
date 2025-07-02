@@ -24,8 +24,6 @@ public:
     inline void setUsePCA(bool usePCA) { m_usePCA = usePCA; }
 
     void setupSeries();
-    void setupInitialDataSeries();
-    void setupPCADataSeries();
 
     void showInitialData(bool show = true);
     void showReducedData(bool show = true);
@@ -40,9 +38,10 @@ public:
 
 private:
     void fillDataSeries(QScatterSeries *series, const Eigen::MatrixXd &matrix);
-    void fillRegressionSeries(QLineSeries *series, const RegressionModel &regModel);
+    void fillPredictedSeries(QScatterSeries *series, const Eigen::MatrixXd &X, const Eigen::VectorXd &y_pred);
+    void fillRegressionSeries(QLineSeries *series, const Eigen::MatrixXd &X, const Eigen::VectorXd &y);
 
-    PCAChart     *m_chart{};
+    PCAChart *m_chart{};
     Model *m_model{};
 
     bool m_usePCA = false;

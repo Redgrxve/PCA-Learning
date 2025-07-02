@@ -41,6 +41,10 @@ public:
 
     void adjustAxesRange();
 
+    void addAndAttachSeries(QAbstractSeries *series);
+    void addAndAttachSeries(QScatterSeries *series);
+    void addAndAttachSeries(QLineSeries *series);
+
 private:
     template<typename T>
     void deleteSeries(T* &series) {
@@ -48,10 +52,6 @@ private:
         delete series;
         series = nullptr;
     }
-
-    void addAndAttachSeries(QAbstractSeries *series);
-    void addAndAttachSeries(QScatterSeries *series);
-    void addAndAttachSeries(QLineSeries *series);
 
     QLineSeries *xAxisLine{};
     QLineSeries *yAxisLine{};

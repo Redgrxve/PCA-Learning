@@ -29,28 +29,44 @@ void PCAChartView::setProjectionAxes(int xIndex, int yIndex)
     m_xIndex = xIndex;
     m_yIndex = yIndex;
 
-    // if (!m_usePCA) {
-    //     const auto titles = m_model->featuresNames();
-    //     if (!titles.empty())
-    //         m_chart->setAxesTitles(titles[xIndex], titles[yIndex]);
-    // }
+    if (!m_usePCA) {
+        const auto titles = m_model->featureNames();
+        if (!titles.empty())
+            m_chart->setAxesTitles(titles[xIndex], titles[yIndex]);
+    }
 }
 
 void PCAChartView::setupSeries()
 {
     if (!m_model) return;
 
-    // m_chart->clearAllDataSeries();
+    m_chart->clearAllDataSeries();
 
-    // auto dataSeries = new QScatterSeries(m_chart);
-    // const auto &data = m_usePCA ? m_model->reducedData() : m_model->initialData();
+    auto trainDataSeries = new QScatterSeries(m_chart);
+    auto testDataSeries = new QScatterSeries(m_chart);
 
-    // fillDataSeries(dataSeries, data);
+    trainDataSeries->setName(tr("Обучающая выборка"));
+    testDataSeries->setName(tr("Тестовая выборка"));
 
-    // if (m_usePCA)
-    //     m_chart->setReducedDataSeries(dataSeries);
-    // else
-    //     m_chart->setInitialDataSeries(dataSeries);
+    const auto &trainData = m_usePCA ? m_model->Z_train() : m_model->X_train();
+    const auto &testData =  m_usePCA ? m_model->Z_test()  : m_model->X_test();
+
+    fillDataSeries(trainDataSeries, trainData);
+    fillDataSeries(testDataSeries, testData);
+
+    m_chart->addAndAttachSeries(trainDataSeries);
+    m_chart->addAndAttachSeries(testDataSeries);
+
+
+
+    // auto pred_testDataSeries = new QScatterSeries(m_chart);
+    // pred_testDataSeries->setName(tr("Предсказанные данные"));
+
+    // const auto &y_test = m_model->y_test();
+    // const auto &y_pred_test = m_model->y_pred_test();
+    // for (int i = 0; i < y_test.rows(); ++i)
+    //     pred_testDataSeries->append(y_test(i), y_pred_test(i));
+    // m_chart->addAndAttachSeries(pred_testDataSeries);
 }
 
 void PCAChartView::showInitialData(bool show)
@@ -102,38 +118,12 @@ void PCAChartView::setAxesRange(double minX, double maxX, double minY, double ma
 
 void PCAChartView::adjustAxesRange()
 {
-    // const auto &data  = m_usePCA ? m_model->reducedData() : m_model->initialData();
-    // const double minX = data.col(m_xIndex).minCoeff();
-    // const double maxX = data.col(m_xIndex).maxCoeff();
-    // const double minY = data.col(m_yIndex).minCoeff();
-    // const double maxY = data.col(m_yIndex).maxCoeff();
-    // setAxesRange(minX, maxX, minY, maxY);
-}
-
-void PCAChartView::setupInitialDataSeries()
-{
-    if (!m_model) return;
-
-    // m_chart->clearAllDataSeries();
-
-    // auto initialDataSeries = new QScatterSeries(m_chart);
-    // const auto &initialData = m_model->initialData();
-
-    // fillDataSeries(initialDataSeries, initialData);
-    // m_chart->setInitialDataSeries(initialDataSeries);
-}
-
-void PCAChartView::setupPCADataSeries()
-{
-    if (!m_model) return;
-
-    // m_chart->clearPCADataSeries();
-
-    // auto reducedDataSeries = new QScatterSeries(m_chart);
-    // const auto &reducedData = m_model->reducedData();
-
-    // fillDataSeries(reducedDataSeries, reducedData);
-    // m_chart->setReducedDataSeries(reducedDataSeries);
+    const auto &data  = m_usePCA ? m_model->Z_train() : m_model->X_train();
+    const double minX = data.col(m_xIndex).minCoeff();
+    const double maxX = data.col(m_xIndex).maxCoeff();
+    const double minY = data.col(m_yIndex).minCoeff();
+    const double maxY = data.col(m_yIndex).maxCoeff();
+    setAxesRange(minX, maxX, minY, maxY);
 }
 
 void PCAChartView::fillDataSeries(QScatterSeries *series, const Eigen::MatrixXd &matrix)
@@ -155,19 +145,27 @@ void PCAChartView::fillDataSeries(QScatterSeries *series, const Eigen::MatrixXd 
         series->append(matrix(i, m_xIndex), matrix(i, m_yIndex));
 }
 
-void PCAChartView::fillRegressionSeries(QLineSeries *series, const RegressionModel &regModel)
+void PCAChartView::fillPredictedSeries(QScatterSeries *series, const Eigen::MatrixXd &X, const Eigen::VectorXd &y_pred)
 {
     series->clear();
 
-    // QVector<QPointF> points;
-    // points.reserve(regModel.x.rows());
+    for (int i = 0; i < X.rows(); ++i)
+        series->append(X(i, m_xIndex), y_pred(i));
+}
 
-    // for (int i = 0; i < regModel.x.rows(); ++i) {
-    //     points.append(QPointF(regModel.x(i, m_xIndex), regModel.y(i)));
-    // }
+void PCAChartView::fillRegressionSeries(QLineSeries *series, const Eigen::MatrixXd &X, const Eigen::VectorXd &y)
+{
+    series->clear();
 
-    // std::sort(points.begin(), points.end(),
-    //           [](const QPointF &a, const QPointF &b) { return a.x() < b.x(); });
+    QVector<QPointF> points;
+    points.reserve(X.rows());
 
-    // series->append(points);
+    for (int i = 0; i < X.rows(); ++i) {
+        points.append(QPointF(X(i, m_xIndex), y(i)));
+    }
+
+   /* std::sort(points.begin(), points.end(),
+              [](const QPointF &a, const QPointF &b) { return a.x() < b.x(); })*/;
+
+    series->append(points);
 }

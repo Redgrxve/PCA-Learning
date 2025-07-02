@@ -11,21 +11,43 @@ class Model
 public:
     Model() = default;
     Model(const Eigen::MatrixXd &X, const Eigen::VectorXd &y,
-                 const QStringList &featureNames, const QString &targetName);
+          const QStringList &featureNames, const QString &targetName);
 
 
     void setData(const Eigen::MatrixXd &X, const Eigen::VectorXd &y);
     void splitTrainTest(double testRatio = 0.2);
     void applyPCA(int numComponents);
     void trainRegression();
+    void trainRegressionPCA();
     void computeMetrics();
 
     void setFeaturesNames(const QStringList &names) { m_featureNames = names; }
     void setTargetName(const QString &name) { m_targetName = name; }
     void computеPCA(int componentsCount);
 
-    // void computeInitialRegression();
-    // void computePCARegression();
+    const QStringList &featureNames() const { return m_featureNames; }
+
+    const Eigen::MatrixXd &X_full()  const { return m_X_full; }
+    const Eigen::MatrixXd &X_train() const { return m_X_train; }
+    const Eigen::MatrixXd &X_test()  const { return m_X_test; }
+
+    const Eigen::VectorXd &y_train() const { return m_y_train; }
+    const Eigen::VectorXd &y_test()  const { return m_y_test; }
+
+    const Eigen::MatrixXd &Z_train() const { return m_Z_train; }
+    const Eigen::MatrixXd &Z_test()  const { return m_Z_test; }
+
+    const Eigen::VectorXd &y_pred_train() const { return m_y_pred_train; }
+    const Eigen::VectorXd &y_pred_test()  const { return m_y_pred_test; }
+
+    const Eigen::VectorXd &y_pred_train_pca() const { return m_y_pred_train_pca; }
+    const Eigen::VectorXd &y_pred_test_pca()  const { return m_y_pred_test_pca; }
+
+    double mse_train() const { return m_mse_train; }
+    double mse_test()  const { return m_mse_test; }
+
+    double mse_train_pca() const { return m_mse_train_pca; }
+    double mse_test_pca()  const { return m_mse_test_pca; }
 
 private:
     QStringList m_featureNames{};

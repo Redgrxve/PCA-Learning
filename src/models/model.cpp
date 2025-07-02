@@ -38,11 +38,11 @@ void Model::splitTrainTest(double testRatio)
 
     for (int i = 0; i < trainSize; ++i) {
         m_X_train.row(i) = m_X_full.row(indices[i]);
-        m_y_train(i) = m_X_full(indices[i]);
+        m_y_train(i) = m_y_full(indices[i]);
     }
     for (int i = 0; i < testSize; ++i) {
         m_X_test.row(i) = m_X_full.row(indices[trainSize + i]);
-        m_y_test(i) = m_X_full(indices[trainSize + i]);
+        m_y_test(i) = m_y_full(indices[trainSize + i]);
     }
 }
 
@@ -53,20 +53,37 @@ void Model::applyPCA(int numComponents)
     pcaData = LATools::fitPCA(m_X_train, numComponents);
     m_Z_train = LATools::transformPCA(pcaData, m_X_train);
     m_Z_test  = LATools::transformPCA(pcaData, m_X_test);
+
+    trainRegressionPCA();
 }
 
 void Model::trainRegression()
 {
-    const auto X_train_ext = LATools::addIntercept(m_X_train);
-    const auto X_test_ext  = LATools::addIntercept(m_X_test);
+    const auto reg = LATools::trainLinearRegression(m_X_train, m_y_train, m_X_test, m_y_test);
 
-    m_theta_original = LATools::linearRegression(X_train_ext, m_y_train);
+    m_theta_original = reg.theta;
 
-    m_y_pred_train = X_train_ext * m_theta_original;
-    m_y_pred_test  = X_test_ext  * m_theta_original;
+    m_y_pred_train   = reg.y_pred_train;
+    m_y_pred_test    = reg.y_pred_test;
 
-    m_mse_train = LATools::MSE(m_y_train, m_y_pred_train);
-    m_mse_test  = LATools::MSE(m_y_test,  m_y_pred_test);
+    m_mse_train      = reg.mse_train;
+    m_mse_test       = reg.mse_test;
+
+    std::cout << "Max diff y vs y_pred (train): " << (m_y_train - m_y_pred_train).cwiseAbs().maxCoeff() << std::endl;
+    std::cout << "Max diff y vs y_pred (test): " << (m_y_test  - m_y_pred_test ).cwiseAbs().maxCoeff() << std::endl;
+}
+
+void Model::trainRegressionPCA()
+{
+    const auto reg = LATools::trainLinearRegression(m_Z_train, m_y_train, m_Z_test, m_y_test);
+
+    m_theta_pca = reg.theta;
+
+    m_y_pred_train_pca = reg.y_pred_train;
+    m_y_pred_test_pca  = reg.y_pred_test;
+
+    m_mse_train_pca    = reg.mse_train;
+    m_mse_test_pca     = reg.mse_test;
 }
 
 // void PCADataModel::setInitialData(const Eigen::MatrixXd &data) {

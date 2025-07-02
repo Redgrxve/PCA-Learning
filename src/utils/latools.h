@@ -114,15 +114,18 @@ Eigen::MatrixXd performPCA(const Eigen::MatrixXd &data,
     return reducedData;
 }
 
-Eigen::VectorXd linearRegression(const Eigen::MatrixXd& Xb, const Eigen::VectorXd& y) {
-    return (Xb.transpose() * Xb).ldlt().solve(Xb.transpose() * y);
+Eigen::VectorXd linearRegression(const Eigen::MatrixXd& X_ext, const Eigen::VectorXd& y)
+{
+    return (X_ext.transpose() * X_ext).ldlt().solve(X_ext.transpose() * y);
 }
 
-double MSE(const Eigen::MatrixXd &y, const Eigen::MatrixXd &yPred) {
-    return (y - yPred).squaredNorm() / y.size();
+double MSE(const Eigen::VectorXd &y, const Eigen::VectorXd &y_pred)
+{
+    return (y - y_pred).squaredNorm() / y.size();
 }
 
-PCA fitPCA(const Eigen::MatrixXd& X_train, int numComponents) {
+PCA fitPCA(const Eigen::MatrixXd& X_train, int numComponents)
+{
     PCA pca;
 
     pca.mean = X_train.colwise().mean();
@@ -140,7 +143,8 @@ PCA fitPCA(const Eigen::MatrixXd& X_train, int numComponents) {
     return pca;
 }
 
-Eigen::MatrixXd transformPCA(const PCA& pca, const Eigen::MatrixXd& X) {
+Eigen::MatrixXd transformPCA(const PCA& pca, const Eigen::MatrixXd& X)
+{
     Eigen::MatrixXd X_centered = X.rowwise() - pca.mean.transpose();
     return X_centered * pca.components;
 }
@@ -157,7 +161,19 @@ RegressionResult trainLinearRegression(const Eigen::MatrixXd& X_train,
                                        const Eigen::MatrixXd& X_test,
                                        const Eigen::VectorXd& y_test)
 {
-    return RegressionResult();
+    const auto X_train_ext = LATools::addIntercept(X_train);
+    const auto X_test_ext  = LATools::addIntercept(X_test);
+
+    RegressionResult result;
+    result.theta = LATools::linearRegression(X_train_ext, y_train);
+
+    result.y_pred_train = X_train_ext * result.theta;
+    result.y_pred_test  = X_test_ext  * result.theta;
+
+    result.mse_train = LATools::MSE(y_train, result.y_pred_train);
+    result.mse_test  = LATools::MSE(y_test, result.y_pred_test);
+
+    return result;
 }
 
 };

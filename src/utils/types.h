@@ -10,7 +10,7 @@ struct PCA
 };
 
 struct RegressionResult {
-    Eigen::VectorXd beta;
+    Eigen::VectorXd theta;
     Eigen::VectorXd y_pred_train;
     Eigen::VectorXd y_pred_test;
     double mse_train = -1.0;

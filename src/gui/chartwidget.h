@@ -31,7 +31,7 @@ public:
     void showPCARegression(bool show = true);
 
 private:
-    void setupRawTabs();
+    void setupFeaturesTabs();
     void setupPCATabs();
     void setupProjectionTabs();
 
