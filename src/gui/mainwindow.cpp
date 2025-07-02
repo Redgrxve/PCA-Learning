@@ -1,5 +1,5 @@
 #include "mainwindow.h"
-#include "pcadatamodel.h"
+#include "model.h"
 #include "utils.h"
 #include "selectheadersdialog.h"
 
@@ -14,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    m_dataModel = new PCADataModel;
+    m_dataModel = new Model;
 
     connect(ui->importAction, &QAction::triggered,
             this, &MainWindow::onImportTriggered);
@@ -61,43 +61,33 @@ void MainWindow::onImportTriggered()
 
     // ui->statusbar->showMessage(filePath, 100000);
 
-    QMessageBox::StandardButton reply;
-    reply = QMessageBox::question(this,
-                                  tr("Тип файла"),
-                                  tr("Файл с заголовками?"));
-
     QString filePath = QFileDialog::getOpenFileName(this, "Open Matrix File", "../../datasets");
     if (filePath.isEmpty()) return;
 
-    Eigen::MatrixXd data;
-    QStringList selectedFeatures;
-    if (reply == QMessageBox::StandardButton::Yes) {
-        const auto headers = Utils::getCSVHeaders(filePath);
+    QStringList featureNames;
+    QString targetName;
+    const auto headers = Utils::getCSVHeaders(filePath);
 
-        SelectHeadersDialog dialog(this);
-        dialog.addHeaders(headers);
+    SelectHeadersDialog dialog(this);
+    dialog.addHeaders(headers);
 
+    if (dialog.exec() == QDialog::Accepted) {
+        featureNames = dialog.getSelectedHeaders();
+        targetName = dialog.getTarget();
+    };
 
-        if (dialog.exec() == QDialog::Accepted) {
-            selectedFeatures = dialog.getSelectedHeaders();
-        };
-
-        data = Utils::readCsvByFeatures(filePath, selectedFeatures);
-        if (data.size() == 0) {
-            QMessageBox::warning(this, "Error", "Failed to load matrix from file.");
-            return;
-        }
-    } else {
-        data = Utils::loadMatrixFromFile(filePath);
-        if (data.size() == 0) {
-            QMessageBox::warning(this, "Error", "Failed to load matrix from file.");
-            return;
-        }
+    const auto [X, y] = Utils::readCsvByFeatures(filePath, featureNames, targetName);
+    if (X.size() == 0 || y.size() == 0) {
+        QMessageBox::warning(this, "Error", "Failed to load matrix from file.");
+        return;
     }
 
-    m_dataModel->setInitialData(data);
-    m_dataModel->setFeaturesNames(selectedFeatures);
+    m_dataModel->setData(X, y);
+    m_dataModel->setFeaturesNames(featureNames);
+    m_dataModel->setTargetName(targetName);
+
     ui->chartWidget->setModel(m_dataModel);
+
     ui->statusbar->showMessage(filePath, 100000);
 }
 

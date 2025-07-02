@@ -17,6 +17,7 @@ public:
 
     void addHeaders(const QStringList &headers);
     QStringList getSelectedHeaders();
+    QString getTarget();
 
 protected:
     void keyPressEvent(QKeyEvent* event) override;

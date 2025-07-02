@@ -1,6 +1,6 @@
 #include "pcachartview.h"
 #include "pcachart.h"
-#include "pcadatamodel.h"
+#include "model.h"
 
 #include <QScatterSeries>
 #include <QLineSeries>
@@ -19,7 +19,7 @@ PCAChartView::~PCAChartView()
     delete m_chart;
 }
 
-void PCAChartView::setModel(PCADataModel *model)
+void PCAChartView::setModel(Model *model)
 {
     m_model = model;
 }
@@ -29,28 +29,28 @@ void PCAChartView::setProjectionAxes(int xIndex, int yIndex)
     m_xIndex = xIndex;
     m_yIndex = yIndex;
 
-    if (!m_usePCA) {
-        const auto titles = m_model->featuresNames();
-        if (!titles.empty())
-            m_chart->setAxesTitles(titles[xIndex], titles[yIndex]);
-    }
+    // if (!m_usePCA) {
+    //     const auto titles = m_model->featuresNames();
+    //     if (!titles.empty())
+    //         m_chart->setAxesTitles(titles[xIndex], titles[yIndex]);
+    // }
 }
 
 void PCAChartView::setupSeries()
 {
     if (!m_model) return;
 
-    m_chart->clearAllDataSeries();
+    // m_chart->clearAllDataSeries();
 
-    auto dataSeries = new QScatterSeries(m_chart);
-    const auto &data = m_usePCA ? m_model->reducedData() : m_model->initialData();
+    // auto dataSeries = new QScatterSeries(m_chart);
+    // const auto &data = m_usePCA ? m_model->reducedData() : m_model->initialData();
 
-    fillDataSeries(dataSeries, data);
+    // fillDataSeries(dataSeries, data);
 
-    if (m_usePCA)
-        m_chart->setReducedDataSeries(dataSeries);
-    else
-        m_chart->setInitialDataSeries(dataSeries);
+    // if (m_usePCA)
+    //     m_chart->setReducedDataSeries(dataSeries);
+    // else
+    //     m_chart->setInitialDataSeries(dataSeries);
 }
 
 void PCAChartView::showInitialData(bool show)
@@ -102,38 +102,38 @@ void PCAChartView::setAxesRange(double minX, double maxX, double minY, double ma
 
 void PCAChartView::adjustAxesRange()
 {
-    const auto &data  = m_usePCA ? m_model->reducedData() : m_model->initialData();
-    const double minX = data.col(m_xIndex).minCoeff();
-    const double maxX = data.col(m_xIndex).maxCoeff();
-    const double minY = data.col(m_yIndex).minCoeff();
-    const double maxY = data.col(m_yIndex).maxCoeff();
-    setAxesRange(minX, maxX, minY, maxY);
+    // const auto &data  = m_usePCA ? m_model->reducedData() : m_model->initialData();
+    // const double minX = data.col(m_xIndex).minCoeff();
+    // const double maxX = data.col(m_xIndex).maxCoeff();
+    // const double minY = data.col(m_yIndex).minCoeff();
+    // const double maxY = data.col(m_yIndex).maxCoeff();
+    // setAxesRange(minX, maxX, minY, maxY);
 }
 
 void PCAChartView::setupInitialDataSeries()
 {
     if (!m_model) return;
 
-    m_chart->clearAllDataSeries();
+    // m_chart->clearAllDataSeries();
 
-    auto initialDataSeries = new QScatterSeries(m_chart);
-    const auto &initialData = m_model->initialData();
+    // auto initialDataSeries = new QScatterSeries(m_chart);
+    // const auto &initialData = m_model->initialData();
 
-    fillDataSeries(initialDataSeries, initialData);
-    m_chart->setInitialDataSeries(initialDataSeries);
+    // fillDataSeries(initialDataSeries, initialData);
+    // m_chart->setInitialDataSeries(initialDataSeries);
 }
 
 void PCAChartView::setupPCADataSeries()
 {
     if (!m_model) return;
 
-    m_chart->clearPCADataSeries();
+    // m_chart->clearPCADataSeries();
 
-    auto reducedDataSeries = new QScatterSeries(m_chart);
-    const auto &reducedData = m_model->reducedData();
+    // auto reducedDataSeries = new QScatterSeries(m_chart);
+    // const auto &reducedData = m_model->reducedData();
 
-    fillDataSeries(reducedDataSeries, reducedData);
-    m_chart->setReducedDataSeries(reducedDataSeries);
+    // fillDataSeries(reducedDataSeries, reducedData);
+    // m_chart->setReducedDataSeries(reducedDataSeries);
 }
 
 void PCAChartView::fillDataSeries(QScatterSeries *series, const Eigen::MatrixXd &matrix)
@@ -159,15 +159,15 @@ void PCAChartView::fillRegressionSeries(QLineSeries *series, const RegressionMod
 {
     series->clear();
 
-    QVector<QPointF> points;
-    points.reserve(regModel.x.rows());
+    // QVector<QPointF> points;
+    // points.reserve(regModel.x.rows());
 
-    for (int i = 0; i < regModel.x.rows(); ++i) {
-        points.append(QPointF(regModel.x(i, m_xIndex), regModel.y(i)));
-    }
+    // for (int i = 0; i < regModel.x.rows(); ++i) {
+    //     points.append(QPointF(regModel.x(i, m_xIndex), regModel.y(i)));
+    // }
 
-    std::sort(points.begin(), points.end(),
-              [](const QPointF &a, const QPointF &b) { return a.x() < b.x(); });
+    // std::sort(points.begin(), points.end(),
+    //           [](const QPointF &a, const QPointF &b) { return a.x() < b.x(); });
 
-    series->append(points);
+    // series->append(points);
 }

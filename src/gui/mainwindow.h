@@ -10,7 +10,7 @@ class MainWindow;
 }
 QT_END_NAMESPACE
 
-class PCADataModel;
+class Model;
 
 class MainWindow : public QMainWindow
 {
@@ -24,7 +24,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    PCADataModel *m_dataModel{};
+    Model *m_dataModel{};
 
 private slots:
     void onImportTriggered();

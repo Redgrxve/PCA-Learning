@@ -5,7 +5,7 @@
 #include <Eigen/Dense>
 
 class PCAChart;
-class PCADataModel;
+class Model;
 class QScatterSeries;
 class QLineSeries;
 class RegressionModel;
@@ -18,7 +18,7 @@ public:
 
     inline PCAChart *pcaChart() const { return m_chart; }
 
-    void setModel(PCADataModel *model);
+    void setModel(Model *model);
     void setProjectionAxes(int xIndex, int yIndex);
 
     inline void setUsePCA(bool usePCA) { m_usePCA = usePCA; }
@@ -43,7 +43,7 @@ private:
     void fillRegressionSeries(QLineSeries *series, const RegressionModel &regModel);
 
     PCAChart     *m_chart{};
-    PCADataModel *m_model{};
+    Model *m_model{};
 
     bool m_usePCA = false;
 

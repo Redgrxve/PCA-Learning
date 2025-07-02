@@ -1,7 +1,7 @@
 #include "chartwidget.h"
 #include "pcachart.h"
 #include "pcachartview.h"
-#include "pcadatamodel.h"
+#include "model.h"
 #include "ui_chartwidget.h"
 
 #include <QtCharts/QScatterSeries>
@@ -40,7 +40,7 @@ ChartWidget::~ChartWidget()
     delete ui;
 }
 
-void ChartWidget::setModel(PCADataModel *model)
+void ChartWidget::setModel(Model *model)
 {
     m_model = model;
 
@@ -48,12 +48,12 @@ void ChartWidget::setModel(PCADataModel *model)
 
     setupProjectionTabs();
 
-    const int rows = static_cast<int>(m_model->initialData().rows());
-    const int cols = static_cast<int>(m_model->initialData().cols());
-    ui->componentsSpinBox->setMaximum(std::min(rows - 1, cols));
+    // const int rows = static_cast<int>(m_model->initialData().rows());
+    // const int cols = static_cast<int>(m_model->initialData().cols());
+    // ui->componentsSpinBox->setMaximum(std::min(rows - 1, cols));
 
-    double mse = m_model->initialRegression().mse;
-    ui->initialMseLabel->setText(tr("MSE до PCA: ") + QString::number(mse));
+    // double mse = m_model->initialRegression().mse;
+    // ui->initialMseLabel->setText(tr("MSE до PCA: ") + QString::number(mse));
 }
 
 void ChartWidget::showInitialData(bool show)
@@ -92,41 +92,41 @@ void ChartWidget::setupRawTabs()
 {
     if (!m_model) return;
 
-    const qsizetype cols = m_model->initialData().cols();
-    for (qsizetype col = 1; col < cols; ++col) {
-        auto *view = new PCAChartView(ui->tabWidget);
-        view->setModel(m_model);
-        view->setUsePCA(false);
-        view->setProjectionAxes(0, col);
-        view->setupSeries();
-        view->adjustAxesRange();
+    // const qsizetype cols = m_model->initialData().cols();
+    // for (qsizetype col = 1; col < cols; ++col) {
+    //     auto *view = new PCAChartView(ui->tabWidget);
+    //     view->setModel(m_model);
+    //     view->setUsePCA(false);
+    //     view->setProjectionAxes(0, col);
+    //     view->setupSeries();
+    //     view->adjustAxesRange();
 
-        connectViewSlots(view);
+    //     connectViewSlots(view);
 
-        ui->tabWidget->addTab(view, QString("Raw: x1 - x%1").arg(col + 1));
-        m_views.push_back(view);
-    }
+    //     ui->tabWidget->addTab(view, QString("Raw: x1 - x%1").arg(col + 1));
+    //     m_views.push_back(view);
+    // }
 }
 
 void ChartWidget::setupPCATabs()
 {
     if (!m_model) return;
-    if (m_model->reducedData().cols() < 2) return;
+    // if (m_model->reducedData().cols() < 2) return;
 
-    const qsizetype cols = m_model->reducedData().cols();
-    for (qsizetype col = 1; col < cols; ++col) {
-        auto *view = new PCAChartView(ui->tabWidget);
-        view->setModel(m_model);
-        view->setUsePCA(true);
-        view->setProjectionAxes(0, col);
-        view->setupSeries();
-        view->adjustAxesRange();
+    // const qsizetype cols = m_model->reducedData().cols();
+    // for (qsizetype col = 1; col < cols; ++col) {
+    //     auto *view = new PCAChartView(ui->tabWidget);
+    //     view->setModel(m_model);
+    //     view->setUsePCA(true);
+    //     view->setProjectionAxes(0, col);
+    //     view->setupSeries();
+    //     view->adjustAxesRange();
 
-        connectViewSlots(view);
+    //     connectViewSlots(view);
 
-        ui->tabWidget->addTab(view, QString("PCA: PC1 - PC%1").arg(col + 1));
-        m_views.push_back(view);
-    }
+    //     ui->tabWidget->addTab(view, QString("PCA: PC1 - PC%1").arg(col + 1));
+    //     m_views.push_back(view);
+    // }
 }
 
 void ChartWidget::setupProjectionTabs()
@@ -157,16 +157,11 @@ void ChartWidget::onPerformPCAClicked()
 {
     if (!m_model) return;
 
-    m_model->computеPCA(ui->componentsSpinBox->value());
-    setupProjectionTabs();
+    // m_model->computеPCA(ui->componentsSpinBox->value());
+    // setupProjectionTabs();
 
-    double mse = m_model->pcaRegression().mse;
-    ui->pcaMseLabel->setText(tr("MSE после PCA: ") + QString::number(mse));
-
-    // showReducedData();
-    // showPCARegression();
-    // showInitialData(false);
-    // showInitialRegression(false);
+    // double mse = m_model->pcaRegression().mse;
+    // ui->pcaMseLabel->setText(tr("MSE после PCA: ") + QString::number(mse));
 }
 
 void ChartWidget::setSliderValue(int value)

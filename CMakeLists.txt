@@ -28,12 +28,13 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         src/gui/chartwidget.cpp src/gui/chartwidget.h src/gui/chartwidget.ui src/gui/customchartview.cpp src/gui/customchartview.h src/gui/pcachart.cpp src/gui/pcachart.h src/gui/pcachartview.cpp src/gui/pcachartview.h
-        src/models/pcadatamodel.h
+        src/models/model.h
         src/utils/latools.h
-        src/models/pcadatamodel.cpp
+        src/models/model.cpp
         src/utils/utils.h
         src/utils/jacobieigensolver.cpp src/utils/jacobieigensolver.h
         src/gui/selectheadersdialog.h src/gui/selectheadersdialog.cpp src/gui/selectheadersdialog.ui
+        src/utils/types.h
 
     )
 # Define target properties for Android with Qt 6 as:

@@ -1,11 +1,11 @@
 #ifndef LATOOLS_H
 #define LATOOLS_H
 
-#include <Eigen/Dense>
 #include <iostream>
 #include <qtypes.h>
 
 #include "jacobieigensolver.h"
+#include "types.h"
 
 namespace LATools
 {
@@ -120,6 +120,44 @@ Eigen::VectorXd linearRegression(const Eigen::MatrixXd& Xb, const Eigen::VectorX
 
 double MSE(const Eigen::MatrixXd &y, const Eigen::MatrixXd &yPred) {
     return (y - yPred).squaredNorm() / y.size();
+}
+
+PCA fitPCA(const Eigen::MatrixXd& X_train, int numComponents) {
+    PCA pca;
+
+    pca.mean = X_train.colwise().mean();
+    Eigen::MatrixXd X_centered = X_train.rowwise() - pca.mean.transpose();
+
+    const auto covMatrix = LATools::findCovarianceMatrix(X_centered);
+
+    JacobiEigenSolver solver;
+    solver.compute(covMatrix);
+
+    Eigen::MatrixXd eigenvectors = solver.eigenvectors();
+
+    pca.components = eigenvectors.leftCols(numComponents);
+
+    return pca;
+}
+
+Eigen::MatrixXd transformPCA(const PCA& pca, const Eigen::MatrixXd& X) {
+    Eigen::MatrixXd X_centered = X.rowwise() - pca.mean.transpose();
+    return X_centered * pca.components;
+}
+
+Eigen::MatrixXd addIntercept(const Eigen::MatrixXd& X)
+{
+    Eigen::MatrixXd X_ext(X.rows(), X.cols() + 1);
+    X_ext << Eigen::VectorXd::Ones(X.rows()), X;
+    return X_ext;
+}
+
+RegressionResult trainLinearRegression(const Eigen::MatrixXd& X_train,
+                                       const Eigen::VectorXd& y_train,
+                                       const Eigen::MatrixXd& X_test,
+                                       const Eigen::VectorXd& y_test)
+{
+    return RegressionResult();
 }
 
 };

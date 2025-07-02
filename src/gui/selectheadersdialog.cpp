@@ -34,6 +34,7 @@ void SelectHeadersDialog::deleteSelectedItems()
     for (QListWidgetItem *item : std::as_const(selectedItems)) {
         int row = ui->listWidget->row(item);
         ui->comboBox->addItem(item->text());
+        ui->targetComboBox->addItem(item->text());
         delete ui->listWidget->takeItem(row);
     }
 }
@@ -44,6 +45,7 @@ void SelectHeadersDialog::addHeaders(const QStringList &headers)
     for (int i = 0; i < size; ++i) {
         const auto header = headers[i];
         ui->comboBox->addItem(header);
+        ui->targetComboBox->addItem(header);
     }
 }
 
@@ -57,6 +59,11 @@ QStringList SelectHeadersDialog::getSelectedHeaders()
     }
 
     return headers;
+}
+
+QString SelectHeadersDialog::getTarget()
+{
+    return ui->targetComboBox->currentText();
 }
 
 void SelectHeadersDialog::onAccepted()
@@ -75,4 +82,5 @@ void SelectHeadersDialog::onHeaderSelected(int index)
 {
     ui->listWidget->addItem(ui->comboBox->itemText(index));
     ui->comboBox->removeItem(index);
+    ui->targetComboBox->removeItem(index);
 }

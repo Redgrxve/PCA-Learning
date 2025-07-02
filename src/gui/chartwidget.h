@@ -9,7 +9,7 @@ namespace Ui {
 class ChartWidget;
 }
 
-class PCADataModel;
+class Model;
 class QScatterSeries;
 class QLineSeries;
 class RegressionModel;
@@ -23,7 +23,7 @@ public:
     explicit ChartWidget(QWidget *parent = nullptr);
     ~ChartWidget();
 
-    void setModel(PCADataModel *model);
+    void setModel(Model *model);
 
     void showInitialData(bool show = true);
     void showReducedData(bool show = true);
@@ -41,7 +41,7 @@ private:
     PCAChartView *currentChartView();
 
     Ui::ChartWidget *ui;
-    PCADataModel *m_model{};
+    Model *m_model{};
     std::vector<PCAChartView*> m_views;
 
 private slots:
