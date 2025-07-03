@@ -101,7 +101,7 @@ std::pair<Eigen::MatrixXd, Eigen::VectorXd> readCsvByFeatures(
     std::vector<double> targetValues;
 
     int readed = 0;
-    while (!in.atEnd() && readed < 1000) {
+    while (!in.atEnd() && readed < 500) {
         QString line = in.readLine().trimmed();
         if (line.isEmpty()) continue;
 

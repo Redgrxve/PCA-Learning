@@ -50,7 +50,7 @@ void Model::applyPCA(int numComponents)
 {
     numComponents = qMin(numComponents, m_X_train.cols());
 
-    pcaData = LATools::fitPCA(m_X_train, numComponents);
+    pcaData   = LATools::fitPCA(m_X_train, numComponents);
     m_Z_train = LATools::transformPCA(pcaData, m_X_train);
     m_Z_test  = LATools::transformPCA(pcaData, m_X_test);
 
@@ -68,6 +68,7 @@ void Model::trainRegression()
 
     m_mse_train      = reg.mse_train;
     m_mse_test       = reg.mse_test;
+
 
     std::cout << "Max diff y vs y_pred (train): " << (m_y_train - m_y_pred_train).cwiseAbs().maxCoeff() << std::endl;
     std::cout << "Max diff y vs y_pred (test): " << (m_y_test  - m_y_pred_test ).cwiseAbs().maxCoeff() << std::endl;
