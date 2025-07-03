@@ -65,7 +65,7 @@ Eigen::MatrixXd findCovarianceMatrix(const Eigen::MatrixXd &centeredData) {
 }
 
 
-Eigen::VectorXd linearRegression(const Eigen::MatrixXd& X_ext, const Eigen::VectorXd& y)
+Eigen::VectorXd linearRegression(const Eigen::MatrixXd &X_ext, const Eigen::VectorXd &y)
 {
     return (X_ext.transpose() * X_ext).ldlt().solve(X_ext.transpose() * y);
 }
@@ -120,10 +120,10 @@ Eigen::MatrixXd addIntercept(const Eigen::MatrixXd& X)
     return X_ext;
 }
 
-RegressionResult trainLinearRegression(const Eigen::MatrixXd& X_train,
-                                       const Eigen::VectorXd& y_train,
-                                       const Eigen::MatrixXd& X_test,
-                                       const Eigen::VectorXd& y_test)
+RegressionResult trainLinearRegression(const Eigen::MatrixXd &X_train,
+                                       const Eigen::VectorXd &y_train,
+                                       const Eigen::MatrixXd &X_test,
+                                       const Eigen::VectorXd &y_test)
 {
     const auto X_train_ext = LATools::addIntercept(X_train);
     const auto X_test_ext  = LATools::addIntercept(X_test);

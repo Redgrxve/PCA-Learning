@@ -57,8 +57,6 @@ void PCAChartView::setupSeries()
     m_chart->addAndAttachSeries(trainDataSeries);
     m_chart->addAndAttachSeries(testDataSeries);
 
-
-
     // auto pred_testDataSeries = new QScatterSeries(m_chart);
     // pred_testDataSeries->setName(tr("Предсказанные данные"));
 
