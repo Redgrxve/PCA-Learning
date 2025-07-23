@@ -40,27 +40,11 @@ Eigen::MatrixXd MainWindow::generateData()
         1.5, 1.6,
         1.1, 0.9;
 
-    //const auto c = PCA::meanSubtraction(a);
     return a;
 }
 
 void MainWindow::onImportTriggered()
 {
-    // QString filePath = QFileDialog::getOpenFileName(this, "Open Matrix File", "../../datasets");
-    // if (filePath.isEmpty()) return;
-
-    // Eigen::MatrixXd data = Utils::readCsvWithHeaders(filePath, {"Temperature (C)", "Apparent Temperature (C)", "Humidity", "Wind Speed (km/h)"});
-    // if (data.size() == 0) {
-    //     QMessageBox::warning(this, "Error", "Failed to load matrix from file.");
-    //     return;
-    // }
-
-    // m_dataModel->setInitialData(data);
-    // m_dataModel->setFeaturesNames({"Temperature (C)", "Apparent Temperature (C)", "Humidity", "Wind Speed (km/h)"});
-    // ui->chartWidget->setModel(m_dataModel);
-
-    // ui->statusbar->showMessage(filePath, 100000);
-
     QString filePath = QFileDialog::getOpenFileName(this, "Open Matrix File", "../../datasets");
     if (filePath.isEmpty()) return;
 

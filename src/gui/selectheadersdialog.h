@@ -33,6 +33,7 @@ signals:
 private slots:
     void onAccepted();
     void onHeaderSelected(int index);
+    void onSelectAll();
 };
 
 #endif // SELECTHEADERSDIALOG_H

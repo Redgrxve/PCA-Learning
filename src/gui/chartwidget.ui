@@ -139,6 +139,9 @@
            </item>
            <item>
             <widget class="QSlider" name="zoomSlider">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
              <property name="minimum">
               <number>10</number>
              </property>

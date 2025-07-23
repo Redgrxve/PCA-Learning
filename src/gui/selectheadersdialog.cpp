@@ -11,6 +11,8 @@ SelectHeadersDialog::SelectHeadersDialog(QWidget *parent)
 
     connect(ui->comboBox, &QComboBox::activated,
             this, &SelectHeadersDialog::onHeaderSelected);
+    connect(ui->selectAllButton, &QPushButton::clicked,
+            this, &SelectHeadersDialog::onSelectAll);
 }
 
 SelectHeadersDialog::~SelectHeadersDialog()
@@ -83,4 +85,19 @@ void SelectHeadersDialog::onHeaderSelected(int index)
     ui->listWidget->addItem(ui->comboBox->itemText(index));
     ui->comboBox->removeItem(index);
     ui->targetComboBox->removeItem(index);
+}
+
+void SelectHeadersDialog::onSelectAll()
+{
+    const int count = ui->comboBox->count() - 1;
+    if (count <= 0) return;
+
+    for (int i = 0; i < count; ++i) {
+        ui->listWidget->addItem(ui->comboBox->itemText(i));
+    }
+
+    ui->targetComboBox->setCurrentIndex(count);
+
+    ui->comboBox->clear();
+    //ui->targetComboBox->clear();
 }

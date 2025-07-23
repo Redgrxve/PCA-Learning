@@ -51,7 +51,7 @@ public:
 
 private:
     QStringList m_featureNames{};
-    QString     m_targetName;     // название целевой переменной (y)
+    QString     m_targetName;
 
     //Original data
     Eigen::MatrixXd m_X_full;
