@@ -30,42 +30,6 @@ PCAChart::PCAChart(QGraphicsItem *parent)
     showAxesLines(false);
 }
 
-void PCAChart::setInitialDataSeries(QScatterSeries *series)
-{
-    m_initialDataSeries = series;
-    m_initialDataSeries->setName(tr("Исходные данные"));
-    addAndAttachSeries(series);
-}
-
-void PCAChart::setReducedDataSeries(QScatterSeries *series)
-{
-    m_reducedDataSeries = series;
-    m_reducedDataSeries->setName(tr("Проекция после PCA"));
-    addAndAttachSeries(series);
-}
-
-void PCAChart::clearInitialDataSeries()
-{
-    if (!m_initialDataSeries) return;
-
-    deleteSeries(m_initialDataSeries);
-}
-
-void PCAChart::clearReducedDataSeries()
-{
-    if (!m_reducedDataSeries) return;
-
-    deleteSeries(m_reducedDataSeries);
-}
-
-void PCAChart::clearPCADataSeries()
-{
-    clearReducedDataSeries();
-
-    if (m_pcaRegressionSeries)
-        deleteSeries(m_pcaRegressionSeries);
-}
-
 void PCAChart::adjustAxesRange()
 {
 
@@ -96,20 +60,6 @@ void PCAChart::addAndAttachSeries(QLineSeries *series)
     QPen pen(m_lineSeriesColor);
     pen.setWidth(m_lineSeriesWidth);
     series->setPen(pen);
-}
-
-void PCAChart::setInitialRegressionSeries(QLineSeries *series)
-{
-    m_initialRegressionSeries = series;
-    m_initialRegressionSeries->setName("Регрессия до PCA");
-    addAndAttachSeries(m_initialRegressionSeries);
-}
-
-void PCAChart::setPCARegressionSeries(QLineSeries *series)
-{
-    m_pcaRegressionSeries = series;
-    m_pcaRegressionSeries->setName("Регрессия после PCA");
-    addAndAttachSeries(m_pcaRegressionSeries);
 }
 
 void PCAChart::setAxesTitles(const QString &x, const QString &y)
@@ -150,44 +100,26 @@ void PCAChart::setAxesLinesColor(const QColor &color)
     yAxisLine->setPointsVisible(false);
 }
 
-void PCAChart::showInitialDataSeries(bool show)
+void PCAChart::showSeries(QAbstractSeries *series, bool show)
 {
-    if (!m_initialDataSeries) return;
-
     if (show)
-        m_initialDataSeries->show();
+        series->show();
     else
-        m_initialDataSeries->hide();
+        series->hide();
 }
 
-void PCAChart::showReducedDataSeries(bool show)
+void PCAChart::showTrainDataSeries(bool show)
 {
-    if (!m_reducedDataSeries) return;
+    if (!m_trainDataSeries) return;
 
-    if (show)
-        m_reducedDataSeries->show();
-    else
-        m_reducedDataSeries->hide();
+    showSeries(m_trainDataSeries, show);
 }
 
-void PCAChart::showInitialRegression(bool show)
+void PCAChart::showTestDataSeries(bool show)
 {
-    if (!m_initialRegressionSeries) return;
+    if (!m_testDataSeries) return;
 
-    if (show)
-        m_initialRegressionSeries->show();
-    else
-        m_initialRegressionSeries->hide();
-}
-
-void PCAChart::showPCARegression(bool show)
-{
-    if (!m_pcaRegressionSeries) return;
-
-    if (show)
-        m_pcaRegressionSeries->show();
-    else
-        m_pcaRegressionSeries->hide();
+    showSeries(m_testDataSeries, show);
 }
 
 void PCAChart::showAxesLines(bool show)
@@ -206,15 +138,9 @@ void PCAChart::showAxesLines(bool show)
 
 void PCAChart::clearAllDataSeries()
 {
-    if (m_initialDataSeries)
-        deleteSeries(m_initialDataSeries);
+    if (m_trainDataSeries)
+        deleteSeries(m_trainDataSeries);
 
-    if (m_reducedDataSeries)
-        deleteSeries(m_reducedDataSeries);
-
-    if (m_initialRegressionSeries)
-        deleteSeries(m_initialRegressionSeries);
-
-    if (m_pcaRegressionSeries)
-        deleteSeries(m_pcaRegressionSeries);
+    if (m_testDataSeries)
+        deleteSeries(m_testDataSeries);
 }

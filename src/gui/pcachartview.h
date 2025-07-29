@@ -25,12 +25,8 @@ public:
 
     void setupSeries();
 
-    void showInitialData(bool show = true);
-    void showReducedData(bool show = true);
-    void showInitialRegression(bool show = true);
-    void showPCARegression(bool show = true);
-
-    void clearPCASeries();
+    void showTrainData(bool show = true);
+    void showTestData(bool show = true);
 
     void setAxesTitles(const QString &x, const QString &y);
     void setAxesRange(double minX, double maxX, double minY, double maxY);

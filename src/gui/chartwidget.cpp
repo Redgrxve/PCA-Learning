@@ -19,14 +19,10 @@ ChartWidget::ChartWidget(QWidget *parent)
 
     connect(ui->zoomSlider, &QSlider::sliderMoved, this, &ChartWidget::onSliderMoved);
 
-    connect(ui->initialDataCheckBox, &QCheckBox::clicked,
-            this, &ChartWidget::showInitialData);
-    connect(ui->reducedDataCheckBox, &QCheckBox::clicked,
-            this, &ChartWidget::showReducedData);
-    connect(ui->initialRegressionCheckBox, &QCheckBox::clicked,
-            this, &ChartWidget::showInitialRegression);
-    connect(ui->pcaRegressionCheckBox, &QCheckBox::clicked,
-            this, &ChartWidget::showPCARegression);
+    connect(ui->trainDataCheckBox, &QCheckBox::clicked,
+             this, &ChartWidget::showTrainData);
+    connect(ui->testDataCheckBox, &QCheckBox::clicked,
+             this, &ChartWidget::showTestData);
 
     connect(ui->inButton,  &QPushButton::clicked, this, &ChartWidget::onZoomInClicked);
     connect(ui->outButton, &QPushButton::clicked, this, &ChartWidget::onZoomOutClicked);
@@ -54,40 +50,24 @@ void ChartWidget::setModel(Model *model)
 
     double mseTest = m_model->mse_test();
     double mseTrain = m_model->mse_train();
-    ui->initialMseLabel->setText(tr("Before\tMSE train: ") + QString::number(mseTrain) +
+    ui->initialMseLabel->setText(tr("До\tMSE train: ") + QString::number(mseTrain) +
                                  tr("\n\tMSE test: ") + QString::number(mseTest));
 }
 
-void ChartWidget::showInitialData(bool show)
+void ChartWidget::showTrainData(bool show)
 {
     if (!m_model) return;
 
-    currentChartView()->showInitialData(show);
-    ui->initialDataCheckBox->setChecked(show);
+    currentChartView()->showTrainData(show);
+    ui->trainDataCheckBox->setChecked(show);
 }
 
-void ChartWidget::showReducedData(bool show)
+void ChartWidget::showTestData(bool show)
 {
     if (!m_model) return;
 
-    currentChartView()->showReducedData(show);
-    ui->reducedDataCheckBox->setChecked(show);
-}
-
-void ChartWidget::showInitialRegression(bool show)
-{
-    if (!m_model) return;
-
-    currentChartView()->showInitialRegression(show);
-    ui->initialRegressionCheckBox->setChecked(show);
-}
-
-void ChartWidget::showPCARegression(bool show)
-{
-    if (!m_model) return;
-
-    currentChartView()->showPCARegression(show);
-    ui->pcaRegressionCheckBox->setChecked(show);
+    currentChartView()->showTestData(show);
+    ui->testDataCheckBox->setChecked(show);
 }
 
 void ChartWidget::setupFeaturesTabs()
@@ -164,7 +144,7 @@ void ChartWidget::onPerformPCAClicked()
 
     double mseTest = m_model->mse_test_pca();
     double mseTrain = m_model->mse_train_pca();
-    ui->pcaMseLabel->setText(tr("After\tMSE train: ") + QString::number(mseTrain) +
+    ui->pcaMseLabel->setText(tr("После\tMSE train: ") + QString::number(mseTrain) +
                              tr("\n\tMSE test: ") + QString::number(mseTest));
 }
 

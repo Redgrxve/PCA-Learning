@@ -25,10 +25,8 @@ public:
 
     void setModel(Model *model);
 
-    void showInitialData(bool show = true);
-    void showReducedData(bool show = true);
-    void showInitialRegression(bool show = true);
-    void showPCARegression(bool show = true);
+    void showTrainData(bool show = true);
+    void showTestData(bool show = true);
 
 private:
     void setupFeaturesTabs();
