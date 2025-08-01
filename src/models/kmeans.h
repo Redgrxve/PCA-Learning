@@ -6,9 +6,21 @@
 class KMeans
 {
 public:
-    KMeans();
+    KMeans(int k, int maxIter = 100);
 
     void compute(const Eigen::MatrixXd &data);
+
+    const std::vector<int> &labels()   const { return m_assignments; }
+    const Eigen::MatrixXd &centroids() const { return m_centroids; }
+
+private:
+    int m_k;
+    int m_maxIter;
+    Eigen::MatrixXd m_centroids;
+    std::vector<int> m_assignments;
+
+    Eigen::MatrixXd initCentroids(const Eigen::MatrixXd &data);
+    std::vector<int> assignClusters(const Eigen::MatrixXd &data);
 };
 
 #endif // KMEANS_H

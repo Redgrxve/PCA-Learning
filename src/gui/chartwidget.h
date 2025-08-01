@@ -53,6 +53,7 @@ private slots:
     void onZoomOutClicked();
     void onSliderMoved(int pos);
     void onPerformPCAClicked();
+    void onPerformClusterization();
 };
 
 #endif // CHARTWIDGET_H

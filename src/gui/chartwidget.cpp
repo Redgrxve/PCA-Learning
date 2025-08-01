@@ -166,10 +166,15 @@ void ChartWidget::onPerformPCAClicked()
     removePCATabs();
     setupPCATabs();
 
-    double mseTest = m_model->mse_test_pca();
-    double mseTrain = m_model->mse_train_pca();
+    const double mseTest = m_model->mse_test_pca();
+    const double mseTrain = m_model->mse_train_pca();
     ui->pcaMseLabel->setText(tr("После\tMSE train: ") + QString::number(mseTrain) +
                              tr("\n\tMSE test: ") + QString::number(mseTest));
+}
+
+void ChartWidget::onPerformClusterization()
+{
+    if (m_model->Z_train().cols() > 2) return;
 }
 
 void ChartWidget::setSliderValue(int value)
