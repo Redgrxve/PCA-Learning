@@ -140,37 +140,6 @@ RegressionResult trainLinearRegression(const Eigen::MatrixXd &X_train,
     return result;
 }
 
-
-// Eigen::MatrixXd performPCA(const Eigen::MatrixXd &data,
-//                            bool isCentered = false,
-//                            int componentsCount = 2)
-// {
-//     Eigen::MatrixXd   covMatrix;
-//     Eigen::MatrixXd   reducedData;
-//     JacobiEigenSolver jacobiEigen;
-
-//     if (!isCentered) {
-//         const auto centered = meanSubtraction(data);
-//         covMatrix = findCovarianceMatrix(centered);
-//         jacobiEigen.compute(covMatrix);
-//         reducedData = reduceData(centered, jacobiEigen.eigenvectors(), componentsCount);
-//     } else {
-//         covMatrix = findCovarianceMatrix(data);
-//         jacobiEigen.compute(covMatrix);
-//         reducedData = reduceData(data, jacobiEigen.eigenvectors(), componentsCount);
-//     }
-
-// #ifdef QT_DEBUG
-//     //std::cout << "\nCentered\n"     << centered                   << std::endl;
-//     std::cout << "\nCov\n"          << covMatrix                  << std::endl;
-//     std::cout << "\nEigenvectors\n" << jacobiEigen.eigenvectors() << std::endl;
-//     std::cout << "\nEigenvalues\n"  << jacobiEigen.eigenvalues()  << std::endl;
-//     std::cout << "\nProjection\n"   << reducedData                << std::endl;
-// #endif
-
-//     return reducedData;
-// }
-
 };
 
 #endif // LATOOLS_H

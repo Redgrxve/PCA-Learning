@@ -28,6 +28,9 @@ public:
     void showTrainData(bool show = true);
     void showTestData(bool show = true);
 
+    void removeFeaturesTabs();
+    void removePCATabs();
+
 private:
     void setupFeaturesTabs();
     void setupPCATabs();
@@ -40,7 +43,10 @@ private:
 
     Ui::ChartWidget *ui;
     Model *m_model{};
-    std::vector<PCAChartView*> m_views;
+    QList<PCAChartView*> m_views;
+
+    QList<int> m_featuresTabsIdeces{};
+    QList<int> m_pcaTabsIdeces{};
 
 private slots:
     void onZoomInClicked();

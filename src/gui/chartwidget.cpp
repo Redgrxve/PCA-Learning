@@ -40,8 +40,6 @@ void ChartWidget::setModel(Model *model)
 {
     m_model = model;
 
-    ui->tabWidget->clear();
-
     setupProjectionTabs();
 
     const int rows = static_cast<int>(m_model->X_full().rows());
@@ -70,6 +68,26 @@ void ChartWidget::showTestData(bool show)
     ui->testDataCheckBox->setChecked(show);
 }
 
+void ChartWidget::removeFeaturesTabs()
+{
+    std::sort(m_featuresTabsIdeces.rbegin(), m_featuresTabsIdeces.rend());
+
+    for (const int idx : std::as_const(m_featuresTabsIdeces))
+        ui->tabWidget->removeTab(idx);
+
+    m_featuresTabsIdeces.clear();
+}
+
+void ChartWidget::removePCATabs()
+{
+    std::sort(m_pcaTabsIdeces.rbegin(), m_pcaTabsIdeces.rend());
+
+    for (const int idx : std::as_const(m_pcaTabsIdeces))
+        ui->tabWidget->removeTab(idx);
+
+    m_pcaTabsIdeces.clear();
+}
+
 void ChartWidget::setupFeaturesTabs()
 {
     if (!m_model) return;
@@ -85,8 +103,11 @@ void ChartWidget::setupFeaturesTabs()
 
         connectViewSlots(view);
 
-        ui->tabWidget->addTab(view, QString("x1 - x%1").arg(col + 1));
-        m_views.push_back(view);
+        m_views.append(view);
+
+        const auto tabLabel = QString("x1 - x%1").arg(col + 1);
+        const int newTabIndex = ui->tabWidget->addTab(view, tabLabel);
+        m_featuresTabsIdeces.append(newTabIndex);
     }
 }
 
@@ -106,8 +127,11 @@ void ChartWidget::setupPCATabs()
 
         connectViewSlots(view);
 
-        ui->tabWidget->addTab(view, QString("PCA: PC1 - PC%1").arg(col + 1));
-        m_views.push_back(view);
+        m_views.append(view);
+
+        const auto tabLabel = QString("PCA: PC1 - PC%1").arg(col + 1);
+        const int newTabIndex = ui->tabWidget->addTab(view, tabLabel);
+        m_pcaTabsIdeces.append(newTabIndex);
     }
 }
 
@@ -119,7 +143,6 @@ void ChartWidget::setupProjectionTabs()
     m_views.clear();
 
     setupFeaturesTabs();
-    setupPCATabs();
 }
 
 void ChartWidget::connectViewSlots(PCAChartView *view)
@@ -140,7 +163,8 @@ void ChartWidget::onPerformPCAClicked()
     if (!m_model) return;
 
     m_model->applyPCA(ui->componentsSpinBox->value());
-    setupProjectionTabs();
+    removePCATabs();
+    setupPCATabs();
 
     double mseTest = m_model->mse_test_pca();
     double mseTrain = m_model->mse_train_pca();
