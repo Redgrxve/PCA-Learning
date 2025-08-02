@@ -104,8 +104,8 @@ void PCAChartView::adjustAxesRange()
 
 void PCAChartView::performClusterization()
 {
-    const auto &clustData = m_model->clustersData_train();
-    const auto &labels = clustData.labels();
+    const auto &clustData = m_model->clustersData_train_pca();
+    const auto &labels = m_model->labels_test_pca();
     const int k = clustData.k();
 
     QList<QScatterSeries*> clustersSeries;
@@ -116,7 +116,12 @@ void PCAChartView::performClusterization()
         clustersSeries.push_back(series);
     }
 
-    const auto &z = m_model->Z_train();
+    const auto &z = m_model->Z_test();
+    if (labels.size() != z.rows()) {
+        qWarning() << "Размер labels и Z_test не совпадают!";
+        return;
+    }
+
     for (int i = 0; i < z.rows(); ++i) {
         QPointF point(z(i, m_xIndex), z(i, m_yIndex));
         clustersSeries[labels[i]]->append(point);

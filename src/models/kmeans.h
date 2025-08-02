@@ -9,6 +9,7 @@ public:
     KMeans(int maxIter = 100);
 
     void compute(const Eigen::MatrixXd &data, int k);
+    int predict(const Eigen::VectorXd &point);
 
     const std::vector<int> &labels()   const { return m_assignments; }
     const Eigen::MatrixXd &centroids() const { return m_centroids; }

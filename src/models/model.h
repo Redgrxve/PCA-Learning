@@ -45,7 +45,8 @@ public:
     const Eigen::VectorXd &y_pred_train_pca() const { return m_y_pred_train_pca; }
     const Eigen::VectorXd &y_pred_test_pca()  const { return m_y_pred_test_pca; }
 
-    const KMeans &clustersData_train() const { return m_clustersData_train; }
+    const KMeans &clustersData_train_pca()     const { return m_clustersData_train_pca; }
+    const std::vector<int> &labels_test_pca()  const { return m_labels_test_pca; }
 
     double mse_train() const { return m_mse_train; }
     double mse_test()  const { return m_mse_test; }
@@ -84,7 +85,8 @@ private:
     Eigen::VectorXd m_y_pred_test_pca{};
 
     //Clusterization
-    KMeans m_clustersData_train{};
+    KMeans m_clustersData_train_pca{};
+    std::vector<int> m_labels_test_pca{};
 
     double m_mse_train = -1.0;
     double m_mse_test = -1.0;

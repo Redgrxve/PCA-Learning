@@ -58,7 +58,17 @@ void Model::applyPCA(int numComponents)
 
 void Model::applyClusterization(int k)
 {
-    m_clustersData_train.compute(m_Z_train, k);
+    m_clustersData_train_pca.compute(m_Z_train, k);
+
+    const int samples = m_Z_test.rows();
+    m_labels_test_pca.clear();
+    m_labels_test_pca.reserve(samples);
+
+    for (int i = 0; i < samples; ++i) {
+        const Eigen::VectorXd &point = m_Z_test.row(i);
+        const int predicted = m_clustersData_train_pca.predict(point);
+        m_labels_test_pca.push_back(predicted);
+    }
 }
 
 void Model::trainRegression()

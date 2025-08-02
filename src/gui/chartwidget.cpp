@@ -196,7 +196,7 @@ void ChartWidget::onPerformClusterization()
 
     m_views.append(view);
 
-    const auto tabLabel = QString("PCA Кластеры");
+    const auto tabLabel = QString("Кластеры (PCA)");
     const int newTabIndex = ui->tabWidget->addTab(view, tabLabel);
     m_pcaTabsIdeces.append(newTabIndex);
 

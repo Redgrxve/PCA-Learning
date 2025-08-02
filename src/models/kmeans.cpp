@@ -43,6 +43,22 @@ void KMeans::compute(const Eigen::MatrixXd &data, int k)
     }
 }
 
+int KMeans::predict(const Eigen::VectorXd &point)
+{
+    double minDist = std::numeric_limits<double>::max();
+    int bestCluster = 0;
+
+    for (int i = 0; i < m_centroids.rows(); ++i) {
+        double dist = (point.transpose() - m_centroids.row(i)).squaredNorm();
+        if (dist < minDist) {
+            minDist = dist;
+            bestCluster = i;
+        }
+    }
+
+    return bestCluster;
+}
+
 Eigen::MatrixXd KMeans::initCentroids(const Eigen::MatrixXd &data)
 {
     std::vector<int> indices(data.rows());
