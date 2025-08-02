@@ -1,6 +1,7 @@
 #include "pcachartview.h"
 #include "pcachart.h"
 #include "model.h"
+#include "kmeans.h"
 
 #include <QScatterSeries>
 #include <QLineSeries>
@@ -27,7 +28,11 @@ void PCAChartView::setProjectionAxes(int xIndex, int yIndex)
     m_xIndex = xIndex;
     m_yIndex = yIndex;
 
-    if (!m_usePCA) {
+    if (m_usePCA) {
+        const auto xTitle = QString("PC%1").arg(xIndex + 1);
+        const auto yTitle = QString("PC%2").arg(yIndex + 1);
+        m_chart->setAxesTitles(xTitle, yTitle);
+    } else {
         const auto titles = m_model->featureNames();
         if (!titles.empty())
             m_chart->setAxesTitles(titles[xIndex], titles[yIndex]);
@@ -97,6 +102,33 @@ void PCAChartView::adjustAxesRange()
     setAxesRange(minX, maxX, minY, maxY);
 }
 
+void PCAChartView::performClusterization()
+{
+    const auto &clustData = m_model->clustersData_train();
+    const auto &labels = clustData.labels();
+    const int k = clustData.k();
+
+    QList<QScatterSeries*> clustersSeries;
+    clustersSeries.reserve(k);
+    for (int i = 0; i < k; ++i) {
+        auto series = new QScatterSeries(m_chart);
+        series->setColor(generateColor(i));
+        clustersSeries.push_back(series);
+    }
+
+    const auto &z = m_model->Z_train();
+    for (int i = 0; i < z.rows(); ++i) {
+        QPointF point(z(i, m_xIndex), z(i, m_yIndex));
+        clustersSeries[labels[i]]->append(point);
+    }
+
+    for (int i = 0; i < k; ++i) {
+        auto series = clustersSeries[i];
+        series->setName(QString("Кластер %1").arg(i+1));
+        m_chart->addAndAttachSeries(clustersSeries[i]);
+    }
+}
+
 void PCAChartView::fillDataSeries(QScatterSeries *series, const Eigen::MatrixXd &matrix)
 {
     series->clear();
@@ -116,27 +148,12 @@ void PCAChartView::fillDataSeries(QScatterSeries *series, const Eigen::MatrixXd 
         series->append(matrix(i, m_xIndex), matrix(i, m_yIndex));
 }
 
-void PCAChartView::fillPredictedSeries(QScatterSeries *series, const Eigen::MatrixXd &X, const Eigen::VectorXd &y_pred)
+QColor PCAChartView::generateColor(int index)
 {
-    series->clear();
+    static QList<QColor> baseColors = { Qt::red, Qt::blue, Qt::green, Qt::cyan, Qt::magenta, Qt::yellow };
+    if (index < baseColors.size())
+        return baseColors[index];
 
-    for (int i = 0; i < X.rows(); ++i)
-        series->append(X(i, m_xIndex), y_pred(i));
+    return QColor::fromHsv((index * 45) % 360, 255, 200);
 }
 
-void PCAChartView::fillRegressionSeries(QLineSeries *series, const Eigen::MatrixXd &X, const Eigen::VectorXd &y)
-{
-    series->clear();
-
-    QVector<QPointF> points;
-    points.reserve(X.rows());
-
-    for (int i = 0; i < X.rows(); ++i) {
-        points.append(QPointF(X(i, m_xIndex), y(i)));
-    }
-
-   /* std::sort(points.begin(), points.end(),
-              [](const QPointF &a, const QPointF &b) { return a.x() < b.x(); })*/;
-
-    series->append(points);
-}

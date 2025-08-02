@@ -8,6 +8,7 @@
 #include <QVector>
 #include <QStringList>
 #include <QDebug>
+#include <QColor>
 #include <qregularexpression.h>
 
 namespace Utils {
@@ -61,8 +62,8 @@ Eigen::MatrixXd loadMatrixFromFile(const QString &filePath)
 std::pair<Eigen::MatrixXd, Eigen::VectorXd> readCsvByFeatures(
     const QString& filePath,
     const QStringList& selectedColumnNames,
-    const QString& targetFeature
-) {
+    const QString& targetFeature)
+{
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         throw std::runtime_error("Не удалось открыть файл: " + filePath.toStdString());

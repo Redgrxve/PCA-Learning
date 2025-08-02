@@ -1,13 +1,12 @@
 #include "model.h"
 #include "latools.h"
+#include "kmeans.h"
 #include <random>
 
 Model::Model(const Eigen::MatrixXd &X, const Eigen::VectorXd &y,
              const QStringList &featureNames, const QString &targetName)
     : m_X_full(X), m_y_full(y), m_featureNames(featureNames), m_targetName(targetName)
-{
-    //computeInitialRegression();
-}
+{}
 
 void Model::setData(const Eigen::MatrixXd &X, const Eigen::VectorXd &y)
 {
@@ -57,18 +56,22 @@ void Model::applyPCA(int numComponents)
     trainRegressionPCA();
 }
 
+void Model::applyClusterization(int k)
+{
+    m_clustersData_train.compute(m_Z_train, k);
+}
+
 void Model::trainRegression()
 {
     const auto reg = LATools::trainLinearRegression(m_X_train, m_y_train, m_X_test, m_y_test);
 
     m_theta_original = reg.theta;
 
-    m_y_pred_train   = reg.y_pred_train;
-    m_y_pred_test    = reg.y_pred_test;
+    m_y_pred_train = std::move(reg.y_pred_train);
+    m_y_pred_test  = std::move(reg.y_pred_test);
 
-    m_mse_train      = reg.mse_train;
-    m_mse_test       = reg.mse_test;
-
+    m_mse_train = reg.mse_train;
+    m_mse_test  = reg.mse_test;
 
     std::cout << "Max diff y vs y_pred (train): " << (m_y_train - m_y_pred_train).cwiseAbs().maxCoeff() << std::endl;
     std::cout << "Max diff y vs y_pred (test): " << (m_y_test  - m_y_pred_test ).cwiseAbs().maxCoeff() << std::endl;

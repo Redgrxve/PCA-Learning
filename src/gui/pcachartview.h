@@ -9,6 +9,7 @@ class Model;
 class QScatterSeries;
 class QLineSeries;
 class RegressionModel;
+class KMeans;
 
 class PCAChartView : public CustomChartView
 {
@@ -32,10 +33,12 @@ public:
     void setAxesRange(double minX, double maxX, double minY, double maxY);
     void adjustAxesRange();
 
+    void performClusterization();
+
 private:
     void fillDataSeries(QScatterSeries *series, const Eigen::MatrixXd &matrix);
-    void fillPredictedSeries(QScatterSeries *series, const Eigen::MatrixXd &X, const Eigen::VectorXd &y_pred);
-    void fillRegressionSeries(QLineSeries *series, const Eigen::MatrixXd &X, const Eigen::VectorXd &y);
+
+    QColor generateColor(int index);
 
     PCAChart *m_chart{};
     Model *m_model{};

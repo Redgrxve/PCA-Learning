@@ -6,12 +6,13 @@
 class KMeans
 {
 public:
-    KMeans(int k, int maxIter = 100);
+    KMeans(int maxIter = 100);
 
-    void compute(const Eigen::MatrixXd &data);
+    void compute(const Eigen::MatrixXd &data, int k);
 
     const std::vector<int> &labels()   const { return m_assignments; }
     const Eigen::MatrixXd &centroids() const { return m_centroids; }
+    int k() const { return m_k; }
 
 private:
     int m_k;

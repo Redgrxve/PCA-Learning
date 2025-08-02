@@ -4,6 +4,7 @@
 #include <QPoint>
 #include <QStringList>
 
+#include "kmeans.h"
 #include "types.h"
 
 class Model
@@ -17,6 +18,7 @@ public:
     void setData(const Eigen::MatrixXd &X, const Eigen::VectorXd &y);
     void splitTrainTest(double testRatio = 0.2);
     void applyPCA(int numComponents);
+    void applyClusterization(int k);
     void trainRegression();
     void trainRegressionPCA();
     void computeMetrics();
@@ -43,6 +45,8 @@ public:
     const Eigen::VectorXd &y_pred_train_pca() const { return m_y_pred_train_pca; }
     const Eigen::VectorXd &y_pred_test_pca()  const { return m_y_pred_test_pca; }
 
+    const KMeans &clustersData_train() const { return m_clustersData_train; }
+
     double mse_train() const { return m_mse_train; }
     double mse_test()  const { return m_mse_test; }
 
@@ -51,33 +55,36 @@ public:
 
 private:
     QStringList m_featureNames{};
-    QString     m_targetName;
+    QString     m_targetName{};
 
     //Original data
-    Eigen::MatrixXd m_X_full;
-    Eigen::VectorXd m_y_full;
+    Eigen::MatrixXd m_X_full{};
+    Eigen::VectorXd m_y_full{};
 
     //Splitted data
-    Eigen::MatrixXd m_X_train;
-    Eigen::VectorXd m_y_train;
-    Eigen::MatrixXd m_X_test;
-    Eigen::VectorXd m_y_test;
+    Eigen::MatrixXd m_X_train{};
+    Eigen::VectorXd m_y_train{};
+    Eigen::MatrixXd m_X_test{};
+    Eigen::VectorXd m_y_test{};
 
     //PCA
-    PCA pcaData;
+    PCA pcaData{};
 
-    Eigen::MatrixXd m_Z_train; // PCA(X_train) -> Z_train (n × k)
-    Eigen::MatrixXd m_Z_test;  // PCA(X_test)  -> Z_test (n × k)
+    Eigen::MatrixXd m_Z_train{}; // PCA(X_train) -> Z_train (n × k)
+    Eigen::MatrixXd m_Z_test{};  // PCA(X_test)  -> Z_test (n × k)
 
     //Regression coeffs
-    Eigen::VectorXd m_theta_original;
-    Eigen::VectorXd m_theta_pca;
+    Eigen::VectorXd m_theta_original{};
+    Eigen::VectorXd m_theta_pca{};
 
     //Predictions
-    Eigen::VectorXd m_y_pred_train;
-    Eigen::VectorXd m_y_pred_test;
-    Eigen::VectorXd m_y_pred_train_pca;
-    Eigen::VectorXd m_y_pred_test_pca;
+    Eigen::VectorXd m_y_pred_train{};
+    Eigen::VectorXd m_y_pred_test{};
+    Eigen::VectorXd m_y_pred_train_pca{};
+    Eigen::VectorXd m_y_pred_test_pca{};
+
+    //Clusterization
+    KMeans m_clustersData_train{};
 
     double m_mse_train = -1.0;
     double m_mse_test = -1.0;

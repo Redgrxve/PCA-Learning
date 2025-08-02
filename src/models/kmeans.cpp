@@ -5,11 +5,13 @@
 #include <numeric>
 #include <algorithm>
 
-KMeans::KMeans(int k, int maxIter)
-    : m_k(k), m_maxIter(maxIter) {}
+KMeans::KMeans(int maxIter)
+    : m_maxIter(maxIter) {}
 
-void KMeans::compute(const Eigen::MatrixXd &data)
+void KMeans::compute(const Eigen::MatrixXd &data, int k)
 {
+    m_k = k;
+
     const int n_samples = data.rows();
     const int n_features = data.cols();
 

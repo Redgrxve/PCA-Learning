@@ -26,6 +26,6 @@ for i in range(1, 3):
 
 #обычный разброс
 for i in range(4, 7):
-    data = np.random.uniform(low, high, size=(100, 5))  # 100 строк, 5 признаков
+    data = np.random.uniform(low, high, size=(10, 3))  # 100 строк, 5 признаков
     df = pd.DataFrame(data)
     df.to_csv(f"datasets/random_dataset_{i}.csv", index=False, header=False)

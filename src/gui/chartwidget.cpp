@@ -1,5 +1,5 @@
 #include "chartwidget.h"
-#include "pcachart.h"
+#include "kmeans.h"
 #include "pcachartview.h"
 #include "model.h"
 #include "ui_chartwidget.h"
@@ -13,10 +13,6 @@ ChartWidget::ChartWidget(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // connect(ui->chartView, &CustomChartView::zoomChanged, this, [this](float value) {
-    //     setSliderValue(static_cast<int>(value * 100.f));
-    // });
-
     connect(ui->zoomSlider, &QSlider::sliderMoved, this, &ChartWidget::onSliderMoved);
 
     connect(ui->trainDataCheckBox, &QCheckBox::clicked,
@@ -29,6 +25,8 @@ ChartWidget::ChartWidget(QWidget *parent)
 
     connect(ui->performPCAButton, &QPushButton::clicked,
             this, &ChartWidget::onPerformPCAClicked);
+    connect(ui->clusterizationButton, &QPushButton::clicked,
+            this, &ChartWidget::onPerformClusterization);
 }
 
 ChartWidget::~ChartWidget()
@@ -70,6 +68,8 @@ void ChartWidget::showTestData(bool show)
 
 void ChartWidget::removeFeaturesTabs()
 {
+    if (m_featuresTabsIdeces.empty()) return;
+
     std::sort(m_featuresTabsIdeces.rbegin(), m_featuresTabsIdeces.rend());
 
     for (const int idx : std::as_const(m_featuresTabsIdeces))
@@ -80,6 +80,8 @@ void ChartWidget::removeFeaturesTabs()
 
 void ChartWidget::removePCATabs()
 {
+    if (m_pcaTabsIdeces.empty()) return;
+
     std::sort(m_pcaTabsIdeces.rbegin(), m_pcaTabsIdeces.rend());
 
     for (const int idx : std::as_const(m_pcaTabsIdeces))
@@ -114,7 +116,6 @@ void ChartWidget::setupFeaturesTabs()
 void ChartWidget::setupPCATabs()
 {
     if (!m_model) return;
-    if (m_model->Z_train().cols() < 2) return;
 
     const qsizetype cols = m_model->Z_train().cols();
     for (qsizetype col = 1; col < cols; ++col) {
@@ -174,7 +175,32 @@ void ChartWidget::onPerformPCAClicked()
 
 void ChartWidget::onPerformClusterization()
 {
-    if (m_model->Z_train().cols() > 2) return;
+    if (!m_model) return;
+
+    if (m_model->Z_train().size() == 0 ||
+        m_model->Z_train().cols() > 2) {
+        ui->componentsSpinBox->setValue(2);
+        onPerformPCAClicked();
+    }
+
+    m_model->applyClusterization(ui->clustersSpinBox->value());
+
+    auto *view = new PCAChartView(ui->tabWidget);
+    view->setModel(m_model);
+    view->setUsePCA(true);
+    view->setProjectionAxes(0, 1);
+    view->performClusterization();
+    view->adjustAxesRange();
+
+    connectViewSlots(view);
+
+    m_views.append(view);
+
+    const auto tabLabel = QString("PCA Кластеры");
+    const int newTabIndex = ui->tabWidget->addTab(view, tabLabel);
+    m_pcaTabsIdeces.append(newTabIndex);
+
+    ui->tabWidget->setCurrentIndex(newTabIndex);
 }
 
 void ChartWidget::setSliderValue(int value)
