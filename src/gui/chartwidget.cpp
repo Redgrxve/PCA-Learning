@@ -107,7 +107,7 @@ void ChartWidget::setupFeaturesTabs()
 
         m_views.append(view);
 
-        const auto tabLabel = QString("x1 - x%1").arg(col + 1);
+        const auto tabLabel = QString("Raw: x1 - x%1").arg(col + 1);
         const int newTabIndex = ui->tabWidget->addTab(view, tabLabel);
         m_featuresTabsIdeces.append(newTabIndex);
     }
@@ -177,30 +177,65 @@ void ChartWidget::onPerformClusterization()
 {
     if (!m_model) return;
 
-    if (m_model->Z_train().size() == 0 ||
-        m_model->Z_train().cols() > 2) {
-        ui->componentsSpinBox->setValue(2);
-        onPerformPCAClicked();
+    const int k = ui->clustersSpinBox->value();
+    m_model->trainKMeans(k);
+    m_model->trainKMeansPCA(k);
+
+    QTabWidget *tabWidget = new QTabWidget;
+    tabWidget->setAttribute(Qt::WA_DeleteOnClose);
+
+    auto initView = [this](PCAChartView *view, bool usePCA, int yIndex) {
+        view->setModel(m_model);
+        view->setUsePCA(usePCA);
+        view->setProjectionAxes(0, yIndex);
+        view->performKMeans();
+        view->adjustAxesRange();
+    };
+
+    qsizetype cols = m_model->X_train().cols();
+    for (qsizetype col = 1; col < cols; ++col) {
+        auto *view = new PCAChartView(tabWidget);
+        initView(view, false, col);
+
+        tabWidget->addTab(view, QString("Raw: x1 - x%1").arg(col + 1));
     }
 
-    m_model->applyClusterization(ui->clustersSpinBox->value());
+    cols = m_model->Z_train().cols();
+    for (qsizetype col = 1; col < cols; ++col) {
+        auto *view = new PCAChartView(tabWidget);
+        initView(view, true, col);
 
-    auto *view = new PCAChartView(ui->tabWidget);
-    view->setModel(m_model);
-    view->setUsePCA(true);
-    view->setProjectionAxes(0, 1);
-    view->performClusterization();
-    view->adjustAxesRange();
+        tabWidget->addTab(view, QString("PCA: PC1 - PC%1").arg(col + 1));
+    }
 
-    connectViewSlots(view);
+    tabWidget->showMaximized();
 
-    m_views.append(view);
+    // if (!m_model) return;
 
-    const auto tabLabel = QString("Кластеры (PCA)");
-    const int newTabIndex = ui->tabWidget->addTab(view, tabLabel);
-    m_pcaTabsIdeces.append(newTabIndex);
+    // if (m_model->Z_train().size() == 0 ||
+    //     m_model->Z_train().cols() > 2) {
+    //     ui->componentsSpinBox->setValue(2);
+    //     onPerformPCAClicked();
+    // }
 
-    ui->tabWidget->setCurrentIndex(newTabIndex);
+    // m_model->trainKMeansPCA(ui->clustersSpinBox->value());
+
+    // auto *view = new PCAChartView(ui->tabWidget);
+    // view->setModel(m_model);
+    // view->setUsePCA(true);
+    // view->setProjectionAxes(0, 1);
+    // view->performKMeans();
+    // view->adjustAxesRange();
+
+    // connectViewSlots(view);
+
+    // m_views.append(view);
+
+    // const auto tabLabel = QString("Кластеры (PCA)");
+    // const int newTabIndex = ui->tabWidget->addTab(view, tabLabel);
+    // m_pcaTabsIdeces.append(newTabIndex);
+
+    // ui->tabWidget->setCurrentIndex(newTabIndex);
 }
 
 void ChartWidget::setSliderValue(int value)

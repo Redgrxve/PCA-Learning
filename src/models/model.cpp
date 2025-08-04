@@ -56,17 +56,38 @@ void Model::applyPCA(int numComponents)
     trainRegressionPCA();
 }
 
-void Model::applyClusterization(int k)
+void Model::trainKMeans(int k)
 {
-    m_clustersData_train_pca.compute(m_Z_train, k);
+    if (m_X_train.size() == 0) return;
+
+    m_kmeans_train.compute(m_X_train, k);
+
+    const int samples = m_X_test.rows();
+
+    m_labels_test.clear();
+    m_labels_test.reserve(samples);
+
+    for (int i = 0; i < samples; ++i) {
+        const Eigen::VectorXd point = m_X_test.row(i);
+        const int predicted = m_kmeans_train.predict(point);
+        m_labels_test.push_back(predicted);
+    }
+}
+
+void Model::trainKMeansPCA(int k)
+{
+    if (m_Z_train.size() == 0) return;
+
+    m_kmeans_train_pca.compute(m_Z_train, k);
 
     const int samples = m_Z_test.rows();
+
     m_labels_test_pca.clear();
     m_labels_test_pca.reserve(samples);
 
     for (int i = 0; i < samples; ++i) {
-        const Eigen::VectorXd &point = m_Z_test.row(i);
-        const int predicted = m_clustersData_train_pca.predict(point);
+        const Eigen::VectorXd point = m_Z_test.row(i);
+        const int predicted = m_kmeans_train_pca.predict(point);
         m_labels_test_pca.push_back(predicted);
     }
 }

@@ -102,11 +102,15 @@ void PCAChartView::adjustAxesRange()
     setAxesRange(minX, maxX, minY, maxY);
 }
 
-void PCAChartView::performClusterization()
+void PCAChartView::performKMeans()
 {
-    const auto &clustData = m_model->clustersData_train_pca();
-    const auto &labels = m_model->labels_test_pca();
-    const int k = clustData.k();
+    const auto &kmeans = m_usePCA ? m_model->kmeans_train_pca() :
+                                    m_model->kmeans_train();
+    const auto &labels = m_usePCA ? m_model->labels_test_pca() :
+                                    m_model->labels_test();
+    const auto &data   = m_usePCA ? m_model->Z_test() :
+                                    m_model->X_test();
+    const int k = kmeans.k();
 
     QList<QScatterSeries*> clustersSeries;
     clustersSeries.reserve(k);
@@ -116,14 +120,13 @@ void PCAChartView::performClusterization()
         clustersSeries.push_back(series);
     }
 
-    const auto &z = m_model->Z_test();
-    if (labels.size() != z.rows()) {
+    if (labels.size() != data.rows()) {
         qWarning() << "Размер labels и Z_test не совпадают!";
         return;
     }
 
-    for (int i = 0; i < z.rows(); ++i) {
-        QPointF point(z(i, m_xIndex), z(i, m_yIndex));
+    for (int i = 0; i < data.rows(); ++i) {
+        const QPointF point(data(i, m_xIndex), data(i, m_yIndex));
         clustersSeries[labels[i]]->append(point);
     }
 

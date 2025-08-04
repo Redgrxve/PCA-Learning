@@ -18,14 +18,15 @@ public:
     void setData(const Eigen::MatrixXd &X, const Eigen::VectorXd &y);
     void splitTrainTest(double testRatio = 0.2);
     void applyPCA(int numComponents);
-    void applyClusterization(int k);
+
+    void trainKMeans(int k);
+    void trainKMeansPCA(int k);
+
     void trainRegression();
     void trainRegressionPCA();
-    void computeMetrics();
 
     void setFeaturesNames(const QStringList &names) { m_featureNames = names; }
     void setTargetName(const QString &name) { m_targetName = name; }
-    void computеPCA(int componentsCount);
 
     const QStringList &featureNames() const { return m_featureNames; }
 
@@ -45,14 +46,17 @@ public:
     const Eigen::VectorXd &y_pred_train_pca() const { return m_y_pred_train_pca; }
     const Eigen::VectorXd &y_pred_test_pca()  const { return m_y_pred_test_pca; }
 
-    const KMeans &clustersData_train_pca()     const { return m_clustersData_train_pca; }
-    const std::vector<int> &labels_test_pca()  const { return m_labels_test_pca; }
-
     double mse_train() const { return m_mse_train; }
     double mse_test()  const { return m_mse_test; }
 
     double mse_train_pca() const { return m_mse_train_pca; }
     double mse_test_pca()  const { return m_mse_test_pca; }
+
+    const KMeans &kmeans_train()     const { return m_kmeans_train; }
+    const KMeans &kmeans_train_pca() const { return m_kmeans_train_pca; }
+
+    const std::vector<int> &labels_test()      const { return m_labels_test; }
+    const std::vector<int> &labels_test_pca()  const { return m_labels_test_pca; }
 
 private:
     QStringList m_featureNames{};
@@ -85,7 +89,9 @@ private:
     Eigen::VectorXd m_y_pred_test_pca{};
 
     //Clusterization
-    KMeans m_clustersData_train_pca{};
+    KMeans m_kmeans_train{};
+    KMeans m_kmeans_train_pca{};
+    std::vector<int> m_labels_test{};
     std::vector<int> m_labels_test_pca{};
 
     double m_mse_train = -1.0;
