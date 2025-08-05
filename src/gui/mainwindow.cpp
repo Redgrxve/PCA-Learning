@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "model.h"
 #include "utils.h"
+//#include "log.h"
 #include "selectheadersdialog.h"
 
 #include <QFileDialog>
@@ -73,5 +74,15 @@ void MainWindow::onImportTriggered()
     ui->chartWidget->setModel(m_dataModel);
 
     ui->statusbar->showMessage(filePath, 100000);
+
+    QFile file("./log.txt");
+    if (!file.open(QFile::Append)) {
+        qWarning() << "Failed to open log file!";
+    }
+
+    QTextStream out(&file);
+    out << "\n" + filePath + "\n";
+
+    file.close();
 }
 

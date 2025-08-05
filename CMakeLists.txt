@@ -36,6 +36,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         src/gui/selectheadersdialog.h src/gui/selectheadersdialog.cpp src/gui/selectheadersdialog.ui
         src/utils/types.h
         src/models/kmeans.h src/models/kmeans.cpp
+        src/utils/log.h
 
 
     )

@@ -1,11 +1,13 @@
 #include "chartwidget.h"
-#include "kmeans.h"
+#include "log.h"
 #include "pcachartview.h"
 #include "model.h"
 #include "ui_chartwidget.h"
 
 #include <QtCharts/QScatterSeries>
 #include <QtCharts/QLineSeries>
+
+#include <QElapsedTimer>
 
 ChartWidget::ChartWidget(QWidget *parent)
     : QWidget(parent)
@@ -178,8 +180,27 @@ void ChartWidget::onPerformClusterization()
     if (!m_model) return;
 
     const int k = ui->clustersSpinBox->value();
+
+//RAW
+    QElapsedTimer timer;
+    timer.start();
+
     m_model->trainKMeans(k);
+
+    qint64 elapsed = timer.nsecsElapsed();
+    QString message = "KMeans raw: " + QString::number(elapsed) + " nsec, " +
+                      QString::number(elapsed / 1000.0) + " mcsec\n";
+    logToFile(message);
+
+//PCA
+    timer.restart();
+
     m_model->trainKMeansPCA(k);
+
+    elapsed = timer.nsecsElapsed();
+    message = "KMeans PCA: " + QString::number(elapsed) + " nsec, " +
+                               QString::number(elapsed / 1000.0) + " mcsec\n";
+    logToFile(message);
 
     QTabWidget *tabWidget = new QTabWidget;
     tabWidget->setAttribute(Qt::WA_DeleteOnClose);
