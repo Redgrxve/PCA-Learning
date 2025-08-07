@@ -27,7 +27,7 @@
           </size>
          </property>
          <property name="text">
-          <string>Обучающие данные</string>
+          <string>Обучающая выборка</string>
          </property>
          <property name="checked">
           <bool>true</bool>
@@ -37,7 +37,7 @@
        <item row="1" column="0">
         <widget class="QCheckBox" name="testDataCheckBox">
          <property name="text">
-          <string>Тестовые данные</string>
+          <string>Тестовая выборка</string>
          </property>
          <property name="checked">
           <bool>true</bool>

@@ -61,7 +61,7 @@ void MainWindow::onImportTriggered()
         targetName = dialog.getTarget();
     };
 
-    const auto [X, y] = Utils::readCsvByFeatures(filePath, featureNames, targetName);
+    const auto [X, y] = Utils::readCsvByFeatures(filePath, featureNames, targetName, ui->limitSpinBox->value());
     if (X.size() == 0 || y.size() == 0) {
         QMessageBox::warning(this, "Error", "Failed to load matrix from file.");
         return;

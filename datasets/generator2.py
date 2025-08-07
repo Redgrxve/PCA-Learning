@@ -19,7 +19,7 @@ def generate_realistic_dataset(filename: str,
     if seed is not None:
         np.random.seed(seed)
 
-    os.makedirs("datasets", exist_ok=True)
+    os.makedirs("datasets2", exist_ok=True)
 
     # Генерация скрытых "истинных" факторов
     latent_factors = np.random.randn(n_samples, 2)  # 2 латентных признака
@@ -40,5 +40,5 @@ def generate_realistic_dataset(filename: str,
     print(f"✅ Датасет сохранён в datasets2/{filename}")
 
 # Пример использования
-generate_realistic_dataset("realistic_data3.csv", n_samples=200, n_features=30, noise_level=0.5, seed=42)
+generate_realistic_dataset("realistic_data3.csv", n_samples=50, n_features=30, noise_level=0.5, seed=98)
 

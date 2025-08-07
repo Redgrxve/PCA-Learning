@@ -62,7 +62,8 @@ Eigen::MatrixXd loadMatrixFromFile(const QString &filePath)
 std::pair<Eigen::MatrixXd, Eigen::VectorXd> readCsvByFeatures(
     const QString& filePath,
     const QStringList& selectedColumnNames,
-    const QString& targetFeature)
+    const QString& targetFeature,
+    int readLimit = 100000)
 {
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -102,7 +103,7 @@ std::pair<Eigen::MatrixXd, Eigen::VectorXd> readCsvByFeatures(
     std::vector<double> targetValues;
 
     int readed = 0;
-    while (!in.atEnd() && readed < 1000) {
+    while (!in.atEnd() && readed < readLimit) {
         QString line = in.readLine().trimmed();
         if (line.isEmpty()) continue;
 
