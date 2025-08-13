@@ -40,5 +40,5 @@ def generate_realistic_dataset(filename: str,
     print(f"✅ Датасет сохранён в datasets2/{filename}")
 
 # Пример использования
-generate_realistic_dataset("realistic_data3.csv", n_samples=50, n_features=30, noise_level=0.5, seed=98)
+generate_realistic_dataset("big_data2.csv", n_samples=1000, n_features=30, noise_level=0.5, seed=98)
 

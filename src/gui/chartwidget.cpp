@@ -180,26 +180,40 @@ void ChartWidget::onPerformClusterization()
     if (!m_model) return;
 
     const int k = ui->clustersSpinBox->value();
+    logToFile(QString("K = %1\n").arg(k));
 
 //RAW
-    QElapsedTimer timer;
-    timer.start();
+    int total = 20;
+    double rawAvg{}, pcaAvg{};
 
-    m_model->trainKMeans(k);
+    for (int i = 0; i < total; ++i) {
+        QElapsedTimer timer;
+        timer.start();
 
-    qint64 elapsed = timer.nsecsElapsed();
-    QString message = "KMeans raw: " + QString::number(elapsed) + " nsec, " +
-                      QString::number(elapsed / 1000.0) + " mcsec\n";
+        m_model->trainKMeans(k);
+
+        rawAvg += timer.nsecsElapsed();
+    }
+    rawAvg /= total;
+
+
+    QString message = "KMeans raw: " + QString::number(rawAvg) + " nsec, " +
+                                       QString::number(rawAvg / 1000.0) + " mcsec\n";
     logToFile(message);
 
 //PCA
-    timer.restart();
+    for (int i = 0; i < total; ++i) {
+        QElapsedTimer timer;
+        timer.start();
 
-    m_model->trainKMeansPCA(k);
+        m_model->trainKMeansPCA(k);
 
-    elapsed = timer.nsecsElapsed();
-    message = "KMeans PCA: " + QString::number(elapsed) + " nsec, " +
-                               QString::number(elapsed / 1000.0) + " mcsec\n";
+        pcaAvg += timer.nsecsElapsed();
+    }
+    pcaAvg /= total;
+
+    message = "KMeans PCA: " + QString::number(pcaAvg) + " nsec, " +
+                               QString::number(pcaAvg / 1000.0) + " mcsec\n//\n";
     logToFile(message);
 
     QTabWidget *tabWidget = new QTabWidget;
@@ -230,33 +244,6 @@ void ChartWidget::onPerformClusterization()
     }
 
     tabWidget->showMaximized();
-
-    // if (!m_model) return;
-
-    // if (m_model->Z_train().size() == 0 ||
-    //     m_model->Z_train().cols() > 2) {
-    //     ui->componentsSpinBox->setValue(2);
-    //     onPerformPCAClicked();
-    // }
-
-    // m_model->trainKMeansPCA(ui->clustersSpinBox->value());
-
-    // auto *view = new PCAChartView(ui->tabWidget);
-    // view->setModel(m_model);
-    // view->setUsePCA(true);
-    // view->setProjectionAxes(0, 1);
-    // view->performKMeans();
-    // view->adjustAxesRange();
-
-    // connectViewSlots(view);
-
-    // m_views.append(view);
-
-    // const auto tabLabel = QString("Кластеры (PCA)");
-    // const int newTabIndex = ui->tabWidget->addTab(view, tabLabel);
-    // m_pcaTabsIdeces.append(newTabIndex);
-
-    // ui->tabWidget->setCurrentIndex(newTabIndex);
 }
 
 void ChartWidget::setSliderValue(int value)
